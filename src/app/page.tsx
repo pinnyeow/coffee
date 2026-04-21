@@ -56,11 +56,13 @@ export default async function HomePage() {
           <div className="text-xs text-stone-500">Welcome back</div>
           <h1 className="text-2xl font-semibold">Pour</h1>
         </div>
-        <form action="/sign-out" method="post">
-          <button type="submit" className="text-xs text-stone-500 underline">
-            Sign out
-          </button>
-        </form>
+        <Link
+          href="/settings"
+          className="w-10 h-10 rounded-full bg-white border border-stone-200 flex items-center justify-center text-stone-600"
+          aria-label="Settings"
+        >
+          ⚙
+        </Link>
       </header>
 
       <div className="px-6">

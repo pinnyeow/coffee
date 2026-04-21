@@ -1,7 +1,7 @@
 import Link from 'next/link'
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
-import LogBrewForm, { type LogBrewDefaults } from './log-brew-form'
+import LogBrewForm, { type LogBrewDefaults, type ProfileOption } from './log-brew-form'
 
 export default async function LogBrewPage({
   searchParams,
@@ -18,18 +18,45 @@ export default async function LogBrewPage({
     return Array.isArray(v) ? v[0] : v
   }
 
+  const { data: profilesData } = await supabase
+    .from('profiles')
+    .select('id, name, method, dose_g, grind, ratio, rpm, temp_c, is_default')
+    .eq('user_id', user.id)
+    .in('method', ['xBloom', 'V60', 'Chemex', 'AeroPress'])
+    .order('is_default', { ascending: false })
+    .order('name')
+
+  const profiles = (profilesData ?? []) as ProfileOption[]
+  const starred = profiles.find((p) => p.is_default)
+
+  const prefillFromUrl = Boolean(pick('bean') || pick('dose') || pick('grind'))
+
+  // Priority: URL params → starred profile → empty
+  const water =
+    pick('water') ??
+    (starred?.dose_g != null && starred?.ratio != null
+      ? String(Math.round(starred.dose_g * starred.ratio))
+      : '')
+
   const defaults: LogBrewDefaults = {
     bean: pick('bean') ?? '',
     roaster: pick('roaster') ?? '',
     origin: pick('origin') ?? '',
-    dose_g: pick('dose') ?? '15',
-    grind_xbloom: pick('grind') ?? '',
-    water_ml: pick('water') ?? '',
-    water_temp_c: pick('temp') ?? '',
+    dose_g: pick('dose') ?? (starred?.dose_g != null ? String(starred.dose_g) : '15'),
+    grind_xbloom: pick('grind') ?? (starred?.grind != null ? String(starred.grind) : ''),
+    water_ml: water,
+    water_temp_c: pick('temp') ?? (starred?.temp_c != null ? String(starred.temp_c) : ''),
     time_str: pick('time') ?? '',
+    profile_id: starred?.id ?? '',
   }
 
-  const fromBean = Boolean(defaults.bean)
+  const hint = prefillFromUrl
+    ? `Prefilled from best brew of ${defaults.bean || 'this bean'}. Tweak any field before saving.`
+    : starred
+    ? `Prefilled from your profile: ${starred.name}. Change profile or tweak fields below.`
+    : profiles.length === 0
+    ? 'No profile set. Create one in Settings to auto-fill future brews.'
+    : ''
 
   return (
     <main className="max-w-md mx-auto min-h-screen bg-stone-50 border-x border-stone-200">
@@ -39,7 +66,7 @@ export default async function LogBrewPage({
         <div className="w-12" />
       </header>
 
-      <LogBrewForm defaults={defaults} prefillHint={fromBean} />
+      <LogBrewForm defaults={defaults} hint={hint} profiles={profiles} />
     </main>
   )
 }
