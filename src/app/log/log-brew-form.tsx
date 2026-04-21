@@ -5,12 +5,38 @@ import { saveBrew, type BrewFormState } from '@/lib/actions/brews'
 
 const initialState: BrewFormState = {}
 
-export default function LogBrewForm() {
+export type LogBrewDefaults = {
+  bean: string
+  roaster: string
+  origin: string
+  dose_g: string
+  grind_xbloom: string
+  water_ml: string
+  water_temp_c: string
+  time_str: string
+}
+
+export default function LogBrewForm({
+  defaults,
+  prefillHint,
+}: {
+  defaults: LogBrewDefaults
+  prefillHint: boolean
+}) {
   const [state, formAction, pending] = useActionState(saveBrew, initialState)
   const [rating, setRating] = useState<number>(4)
 
   return (
     <form action={formAction} className="px-6 pb-16 space-y-5">
+      {prefillHint && (
+        <div className="rounded-xl px-3 py-2 text-xs bg-blue-50 text-blue-800 border border-blue-200 flex items-center gap-2">
+          <span>✨</span>
+          <span>
+            Prefilled from best brew of <b>{defaults.bean}</b>. Tweak any field before saving.
+          </span>
+        </div>
+      )}
+
       {state.error && (
         <div className="rounded-xl bg-red-50 border border-red-200 p-3 text-sm text-red-800">
           {state.error}
@@ -21,7 +47,8 @@ export default function LogBrewForm() {
         <input
           name="bean_name"
           required
-          autoFocus
+          autoFocus={!defaults.bean}
+          defaultValue={defaults.bean}
           placeholder="e.g., Torahebi Banana"
           className="w-full bg-white rounded-xl py-3 px-4 border border-stone-300 text-sm"
         />
@@ -31,6 +58,7 @@ export default function LogBrewForm() {
         <Field label="Roaster">
           <input
             name="roaster"
+            defaultValue={defaults.roaster}
             placeholder="Torahebi"
             className="w-full bg-white rounded-xl py-3 px-4 border border-stone-300 text-sm"
           />
@@ -38,6 +66,7 @@ export default function LogBrewForm() {
         <Field label="Origin">
           <input
             name="origin"
+            defaultValue={defaults.origin}
             placeholder="Ethiopia"
             className="w-full bg-white rounded-xl py-3 px-4 border border-stone-300 text-sm"
           />
@@ -48,19 +77,19 @@ export default function LogBrewForm() {
         <div className="text-xs text-stone-500 mb-3">xBloom settings</div>
         <div className="grid grid-cols-2 gap-4">
           <Field label="Dose (g)" error={state.fieldErrors?.dose_g}>
-            <input name="dose_g" type="number" step="0.1" defaultValue="15" inputMode="decimal" className="w-24 text-2xl font-semibold bg-transparent border-b border-stone-300 focus:outline-none" />
+            <input name="dose_g" type="number" step="0.1" defaultValue={defaults.dose_g} inputMode="decimal" className="w-24 text-2xl font-semibold bg-transparent border-b border-stone-300 focus:outline-none" />
           </Field>
           <Field label="Grind" error={state.fieldErrors?.grind_xbloom}>
-            <input name="grind_xbloom" type="number" step="0.1" placeholder="55" inputMode="decimal" className="w-24 text-2xl font-semibold bg-transparent border-b border-stone-300 focus:outline-none" />
+            <input name="grind_xbloom" type="number" step="0.5" defaultValue={defaults.grind_xbloom} placeholder="55" inputMode="decimal" className="w-24 text-2xl font-semibold bg-transparent border-b border-stone-300 focus:outline-none" />
           </Field>
           <Field label="Water (ml)" error={state.fieldErrors?.water_ml}>
-            <input name="water_ml" type="number" placeholder="225" inputMode="numeric" className="w-24 text-2xl font-semibold bg-transparent border-b border-stone-300 focus:outline-none" />
+            <input name="water_ml" type="number" defaultValue={defaults.water_ml} placeholder="225" inputMode="numeric" className="w-24 text-2xl font-semibold bg-transparent border-b border-stone-300 focus:outline-none" />
           </Field>
           <Field label="Temp (°C)" error={state.fieldErrors?.water_temp_c}>
-            <input name="water_temp_c" type="number" step="0.1" placeholder="92" inputMode="decimal" className="w-24 text-2xl font-semibold bg-transparent border-b border-stone-300 focus:outline-none" />
+            <input name="water_temp_c" type="number" step="0.1" defaultValue={defaults.water_temp_c} placeholder="92" inputMode="decimal" className="w-24 text-2xl font-semibold bg-transparent border-b border-stone-300 focus:outline-none" />
           </Field>
           <Field label="Time">
-            <input name="time_str" placeholder="3:14" className="w-24 text-2xl font-semibold bg-transparent border-b border-stone-300 focus:outline-none" />
+            <input name="time_str" defaultValue={defaults.time_str} placeholder="3:14" className="w-24 text-2xl font-semibold bg-transparent border-b border-stone-300 focus:outline-none" />
           </Field>
         </div>
       </div>

@@ -12,7 +12,7 @@ type BrewRow = {
   rating: number
   notes: string | null
   created_at: string
-  bean: { name: string; roaster: string | null; origin: string | null } | null
+  bean: { name: string; slug: string; roaster: string | null; origin: string | null } | null
 }
 
 function formatTime(seconds: number | null) {
@@ -42,7 +42,7 @@ export default async function HomePage() {
 
   const { data, error } = await supabase
     .from('brews')
-    .select('id, dose_g, water_ml, grind_xbloom, water_temp_c, time_seconds, rating, notes, created_at, bean:beans(name, roaster, origin)')
+    .select('id, dose_g, water_ml, grind_xbloom, water_temp_c, time_seconds, rating, notes, created_at, bean:beans(name, slug, roaster, origin)')
     .eq('user_id', user.id)
     .order('created_at', { ascending: false })
     .limit(20)
@@ -92,9 +92,18 @@ export default async function HomePage() {
             <div key={b.id} className="bg-white rounded-2xl p-4 border border-stone-200">
               <div className="flex items-start justify-between">
                 <div>
-                  <div className="font-medium text-stone-900">
-                    {b.bean?.name ?? 'Unknown bean'}
-                  </div>
+                  {b.bean?.slug ? (
+                    <Link
+                      href={`/beans/${b.bean.slug}`}
+                      className="font-medium text-stone-900 hover:underline"
+                    >
+                      {b.bean.name}
+                    </Link>
+                  ) : (
+                    <div className="font-medium text-stone-900">
+                      {b.bean?.name ?? 'Unknown bean'}
+                    </div>
+                  )}
                   <div className="text-xs text-stone-500 mt-0.5">
                     {[b.bean?.roaster, b.bean?.origin].filter(Boolean).join(' · ')}
                     {b.bean?.roaster || b.bean?.origin ? ' · ' : ''}

@@ -1,12 +1,35 @@
 import Link from 'next/link'
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
-import LogBrewForm from './log-brew-form'
+import LogBrewForm, { type LogBrewDefaults } from './log-brew-form'
 
-export default async function LogBrewPage() {
+export default async function LogBrewPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ [k: string]: string | string[] | undefined }>
+}) {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) redirect('/sign-in')
+
+  const params = await searchParams
+  const pick = (k: string) => {
+    const v = params[k]
+    return Array.isArray(v) ? v[0] : v
+  }
+
+  const defaults: LogBrewDefaults = {
+    bean: pick('bean') ?? '',
+    roaster: pick('roaster') ?? '',
+    origin: pick('origin') ?? '',
+    dose_g: pick('dose') ?? '15',
+    grind_xbloom: pick('grind') ?? '',
+    water_ml: pick('water') ?? '',
+    water_temp_c: pick('temp') ?? '',
+    time_str: pick('time') ?? '',
+  }
+
+  const fromBean = Boolean(defaults.bean)
 
   return (
     <main className="max-w-md mx-auto min-h-screen bg-stone-50 border-x border-stone-200">
@@ -16,7 +39,7 @@ export default async function LogBrewPage() {
         <div className="w-12" />
       </header>
 
-      <LogBrewForm />
+      <LogBrewForm defaults={defaults} prefillHint={fromBean} />
     </main>
   )
 }
