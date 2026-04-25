@@ -9,6 +9,9 @@ export type LogBrewDefaults = {
   bean: string
   roaster: string
   origin: string
+  purchased_country: string
+  purchased_city: string
+  purchased_at: string
   dose_g: string
   grind_xbloom: string
   water_ml: string
@@ -127,6 +130,43 @@ export default function LogBrewForm({
           />
         </Field>
       </div>
+
+      <details className="bg-white rounded-2xl border border-stone-200">
+        <summary className="px-4 py-3 text-xs text-stone-600 cursor-pointer list-none flex items-center justify-between">
+          <span>
+            Bought in <span className="text-stone-400 normal-case">— optional, remembered per bean</span>
+          </span>
+          <span className="text-stone-400">▾</span>
+        </summary>
+        <div className="px-4 pb-4 grid grid-cols-2 gap-3">
+          <Field label="Country">
+            <input
+              name="purchased_country"
+              defaultValue={defaults.purchased_country}
+              placeholder="Japan"
+              className="w-full bg-white border-b border-stone-300 py-1 text-sm focus:outline-none"
+            />
+          </Field>
+          <Field label="City">
+            <input
+              name="purchased_city"
+              defaultValue={defaults.purchased_city}
+              placeholder="Tokyo"
+              className="w-full bg-white border-b border-stone-300 py-1 text-sm focus:outline-none"
+            />
+          </Field>
+          <div className="col-span-2">
+            <Field label="Shop / Cafe">
+              <input
+                name="purchased_at"
+                defaultValue={defaults.purchased_at}
+                placeholder="Torahebi"
+                className="w-full bg-white border-b border-stone-300 py-1 text-sm focus:outline-none"
+              />
+            </Field>
+          </div>
+        </div>
+      </details>
 
       <div className="bg-white rounded-2xl p-4 border border-stone-200">
         <div className="text-xs text-stone-500 mb-3">xBloom settings</div>
