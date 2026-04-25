@@ -63,7 +63,8 @@ export default async function BeanDetailPage({
 
   if (!bean) notFound()
 
-  const { data: brewsData } = await supabase
+  // My brews
+  const { data: myBrewsData } = await supabase
     .from('brews')
     .select(
       'id, dose_g, water_ml, grind_xbloom, water_temp_c, time_seconds, rating, notes, is_best, created_at'
@@ -72,10 +73,55 @@ export default async function BeanDetailPage({
     .eq('user_id', user.id)
     .order('created_at', { ascending: false })
 
-  const brews = (brewsData ?? []) as BrewRow[]
+  const brews = (myBrewsData ?? []) as BrewRow[]
   const recipe = pickRecipe(brews)
   const hasVariance = brewsHaveRatingVariance(brews)
   const avg = avgRating(brews)
+
+  // Friend's brews for this bean (RLS gates the rest)
+  const [{ data: outF }, { data: inF }] = await Promise.all([
+    supabase.from('friendships').select('friend_id').eq('user_id', user.id).eq('status', 'accepted'),
+    supabase.from('friendships').select('user_id').eq('friend_id', user.id).eq('status', 'accepted'),
+  ])
+  const friendIds = [
+    ...(outF ?? []).map((r) => r.friend_id),
+    ...(inF ?? []).map((r) => r.user_id),
+  ]
+
+  type FriendBrewRow = BrewRow & {
+    user: { id: string; username: string | null; display_name: string | null } | null
+  }
+  let friendBrews: FriendBrewRow[] = []
+  if (friendIds.length > 0) {
+    const { data: fData } = await supabase
+      .from('brews')
+      .select(
+        'id, dose_g, water_ml, grind_xbloom, water_temp_c, time_seconds, rating, notes, is_best, created_at, user:users(id, username, display_name)'
+      )
+      .eq('bean_id', bean.id)
+      .in('user_id', friendIds)
+      .eq('visibility', 'friends')
+      .order('created_at', { ascending: false })
+    friendBrews = (fData ?? []) as unknown as FriendBrewRow[]
+  }
+
+  // Build per-friend recipe (one card per friend who brewed this bean)
+  type FriendRecipe = {
+    user: { id: string; username: string | null; display_name: string | null }
+    brew: BrewRow
+    label: 'Best' | 'Latest'
+  }
+  const friendRecipes: FriendRecipe[] = []
+  const seen = new Set<string>()
+  for (const fb of friendBrews) {
+    if (!fb.user || seen.has(fb.user.id)) continue
+    const ofUser = friendBrews.filter((b) => b.user?.id === fb.user!.id)
+    const r = pickRecipe(ofUser)
+    if (r) {
+      friendRecipes.push({ user: fb.user, brew: r.brew as BrewRow, label: r.label })
+      seen.add(fb.user.id)
+    }
+  }
 
   const best = recipe?.brew
   const ratio =
@@ -158,6 +204,49 @@ export default async function BeanDetailPage({
             </Link>
           </div>
         </div>
+      )}
+
+      {friendRecipes.length > 0 && (
+        <section className="px-6 mt-5">
+          <div className="text-[11px] uppercase tracking-wider text-stone-500 mb-2">
+            Friends&apos; recipes
+          </div>
+          <div className="space-y-2">
+            {friendRecipes.map((fr) => {
+              const ratio =
+                fr.brew.water_ml != null && fr.brew.dose_g > 0
+                  ? (fr.brew.water_ml / fr.brew.dose_g).toFixed(1)
+                  : null
+              const handle = fr.user.username ?? '?'
+              const displayName = fr.user.display_name ?? handle
+              return (
+                <Link
+                  key={fr.user.id}
+                  href={`/brews/${fr.brew.id}`}
+                  className="block bg-white rounded-2xl p-3 border border-stone-200 hover:border-stone-300"
+                >
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <div className="text-xs text-stone-500">
+                        <b className="text-stone-700">{displayName}</b>&apos;s {fr.label.toLowerCase()} ·{' '}
+                        {formatStars(fr.brew.rating)}
+                      </div>
+                      <div className="text-xs big-num mt-0.5 text-stone-700 flex gap-2 flex-wrap">
+                        <span>{fr.brew.dose_g}g</span>
+                        {fr.brew.water_ml != null && <><span className="text-stone-300">·</span><span>{fr.brew.water_ml}ml</span></>}
+                        {ratio && <><span className="text-stone-300">·</span><span>1:{ratio}</span></>}
+                        {fr.brew.water_temp_c != null && <><span className="text-stone-300">·</span><span>{fr.brew.water_temp_c}°C</span></>}
+                        {fr.brew.grind_xbloom != null && <><span className="text-stone-300">·</span><span>grind {fr.brew.grind_xbloom}</span></>}
+                        {fr.brew.time_seconds != null && <><span className="text-stone-300">·</span><span>{formatTime(fr.brew.time_seconds)}</span></>}
+                      </div>
+                    </div>
+                    <span className="text-xs text-stone-400">›</span>
+                  </div>
+                </Link>
+              )
+            })}
+          </div>
+        </section>
       )}
 
       <section className="px-6 mt-6 pb-10">

@@ -2,6 +2,7 @@ import Link from 'next/link'
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import ProfileActions from './profile-actions'
+import FriendsSection from './friends-section'
 
 type ProfileRow = {
   id: string
@@ -42,6 +43,50 @@ export default async function SettingsPage() {
     .select('onboarded_from_obsidian')
     .eq('user_id', user.id)
     .maybeSingle()
+
+  const { data: meRow } = await supabase
+    .from('users')
+    .select('username, display_name')
+    .eq('id', user.id)
+    .maybeSingle()
+
+  // Friendships I sent
+  const { data: outgoing } = await supabase
+    .from('friendships')
+    .select('status, friend:users!friendships_friend_id_fkey(id, username, display_name)')
+    .eq('user_id', user.id)
+
+  // Friendships sent to me
+  const { data: incoming } = await supabase
+    .from('friendships')
+    .select('status, sender:users!friendships_user_id_fkey(id, username, display_name)')
+    .eq('friend_id', user.id)
+
+  const accepted: { user: { id: string; username: string | null; display_name: string | null } }[] = []
+  const pendingOutgoing: typeof accepted = []
+  const pendingIncoming: typeof accepted = []
+  const seen = new Set<string>()
+
+  for (const row of outgoing ?? []) {
+    const f = (row.friend as unknown) as { id: string; username: string | null; display_name: string | null } | null
+    if (!f) continue
+    if (row.status === 'accepted' && !seen.has(f.id)) {
+      seen.add(f.id)
+      accepted.push({ user: f })
+    } else if (row.status === 'pending') {
+      pendingOutgoing.push({ user: f })
+    }
+  }
+  for (const row of incoming ?? []) {
+    const u = (row.sender as unknown) as { id: string; username: string | null; display_name: string | null } | null
+    if (!u) continue
+    if (row.status === 'accepted' && !seen.has(u.id)) {
+      seen.add(u.id)
+      accepted.push({ user: u })
+    } else if (row.status === 'pending') {
+      pendingIncoming.push({ user: u })
+    }
+  }
 
   const { data: profilesData } = await supabase
     .from('profiles')
@@ -91,6 +136,17 @@ export default async function SettingsPage() {
             </Link>
           </div>
           <ProfileList profiles={espresso} />
+        </section>
+
+        <section>
+          <h2 className="text-[11px] uppercase tracking-wider text-stone-500 mb-2">Friends</h2>
+          <FriendsSection
+            myUsername={meRow?.username ?? null}
+            myDisplayName={meRow?.display_name ?? null}
+            pendingIncoming={pendingIncoming}
+            pendingOutgoing={pendingOutgoing}
+            accepted={accepted}
+          />
         </section>
 
         <section>

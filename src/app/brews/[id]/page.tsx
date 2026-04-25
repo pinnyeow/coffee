@@ -2,6 +2,7 @@ import Link from 'next/link'
 import { notFound, redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import EditBrewForm from './edit-brew-form'
+import ShareButton from './share-button'
 
 export default async function BrewDetailPage({
   params,
@@ -49,6 +50,25 @@ export default async function BrewDetailPage({
         <h1 className="font-semibold">Edit brew</h1>
         <div className="w-12" />
       </header>
+
+      <div className="px-6 mb-3">
+        <div className="bg-white rounded-2xl border border-stone-200 p-3">
+          <ShareButton
+            brew={{
+              bean_name: bean?.name ?? 'Brew',
+              origin: bean?.origin ?? null,
+              roaster: bean?.roaster ?? null,
+              dose_g: brew.dose_g,
+              water_ml: brew.water_ml,
+              grind_xbloom: brew.grind_xbloom,
+              water_temp_c: brew.water_temp_c,
+              time_seconds: brew.time_seconds,
+              rating: brew.rating,
+              notes: brew.notes,
+            }}
+          />
+        </div>
+      </div>
 
       <div className="px-6 pb-3">
         {bean && (
