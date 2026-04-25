@@ -84,10 +84,10 @@ function extractOriginFromHeader(header: string): { name: string; origin: string
 }
 
 function parseBrewLine(line: string): ParsedBrew | null {
-  // Strip common labels
+  // Strip common labels (colon is optional in Pin's journal)
   const cleaned = line
-    .replace(/^\s*Dose:\s*/i, '')
-    .replace(/;\s*Dose:\s*/gi, '; ')
+    .replace(/^\s*Dose\s*:?\s*/i, '')
+    .replace(/;\s*Dose\s*:?\s*/gi, '; ')
     .replace(/Grind\s*(size)?\s*:?\s*/gi, '')
     .replace(/RPM\s*:?\s*/gi, '')
 
@@ -167,9 +167,10 @@ export function parseJournal(text: string): ParseResult {
     const line = rawLine.trim()
     if (!line) continue
 
-    // Bold header = new bean section
-    const headerMatch = line.match(/^\*{1,2}([^*]+?)\*{1,2}\s*$/)
-    if (headerMatch) {
+    // Bold header = new bean section.
+    // Handles: **Name**, **Name** trailing text, **Name (no closing)
+    const headerMatch = line.match(/^\*{1,2}([^*\n]+?)(?:\*{1,2}|$)/)
+    if (headerMatch && /[a-zA-Z]/.test(headerMatch[1])) {
       const { name, origin } = extractOriginFromHeader(headerMatch[1])
       current = { name, roaster: null, origin, brews: [] }
       beans.push(current)
