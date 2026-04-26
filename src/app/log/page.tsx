@@ -38,6 +38,20 @@ export default async function LogBrewPage({
       ? String(Math.round(starred.dose_g * starred.ratio))
       : '')
 
+  const fromBrewId = pick('from') ?? ''
+
+  // If we have a "from" id, look up the source brew's owner display info for attribution hint
+  let fromOwnerLabel: string | null = null
+  if (fromBrewId) {
+    const { data: src } = await supabase
+      .from('brews')
+      .select('user:users(username, display_name)')
+      .eq('id', fromBrewId)
+      .maybeSingle()
+    const u = (src?.user as unknown) as { username: string | null; display_name: string | null } | null
+    if (u) fromOwnerLabel = u.display_name ?? (u.username ? `@${u.username}` : 'a friend')
+  }
+
   const defaults: LogBrewDefaults = {
     bean: pick('bean') ?? '',
     roaster: pick('roaster') ?? '',
@@ -51,9 +65,12 @@ export default async function LogBrewPage({
     water_temp_c: pick('temp') ?? (starred?.temp_c != null ? String(starred.temp_c) : ''),
     time_str: pick('time') ?? '',
     profile_id: starred?.id ?? '',
+    derived_from_brew_id: fromBrewId,
   }
 
-  const hint = prefillFromUrl
+  const hint = fromOwnerLabel
+    ? `Trying ${fromOwnerLabel}'s recipe for ${defaults.bean || 'this bean'}. We'll credit them on your brew.`
+    : prefillFromUrl
     ? `Prefilled from best brew of ${defaults.bean || 'this bean'}. Tweak any field before saving.`
     : starred
     ? `Prefilled from your profile: ${starred.name}. Change profile or tweak fields below.`

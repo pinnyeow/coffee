@@ -18,6 +18,7 @@ export type LogBrewDefaults = {
   water_temp_c: string
   time_str: string
   profile_id: string
+  derived_from_brew_id: string
 }
 
 export type ProfileOption = {
@@ -100,6 +101,8 @@ export default function LogBrewForm({
           </select>
         </Field>
       )}
+
+      <input type="hidden" name="derived_from_brew_id" value={defaults.derived_from_brew_id} />
 
       <Field label="Bean" error={state.fieldErrors?.bean_name}>
         <input
@@ -261,6 +264,11 @@ export default function LogBrewForm({
           className="w-full bg-white rounded-xl py-3 px-4 border border-stone-300 text-sm"
         />
       </Field>
+
+      <label className="flex items-center gap-2 text-sm text-stone-700">
+        <input type="checkbox" name="is_private" className="w-4 h-4" />
+        <span>🔒 Private — only me can see this brew</span>
+      </label>
 
       <button
         type="submit"

@@ -1,12 +1,12 @@
 import Link from 'next/link'
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
-import {
-  pickRecipe,
-  avgRating,
-  formatRelative,
-  type BrewForPicker,
-} from '@/lib/recipe-picker'
+import { pickRecipe, avgRating, type BrewForPicker } from '@/lib/recipe-picker'
+import HomeMineView, {
+  type BeanCardData,
+  type UnbrewedBookmark,
+} from './home-mine-view'
+import HomeFriendsView, { type FriendBeanCard } from './home-friends-view'
 
 type BrewRow = BrewForPicker & {
   bean: {
@@ -17,30 +17,6 @@ type BrewRow = BrewForPicker & {
     origin: string | null
   } | null
   user: { id: string; username: string | null; display_name: string | null } | null
-}
-
-function formatTime(seconds: number | null) {
-  if (seconds == null) return null
-  const m = Math.floor(seconds / 60)
-  const s = seconds % 60
-  return `${m}:${s.toString().padStart(2, '0')}`
-}
-
-function formatStars(r: number) {
-  const rounded = Math.round(r)
-  return '★'.repeat(rounded) + '☆'.repeat(5 - rounded)
-}
-
-function avatarColor(name: string) {
-  const palette = [
-    'bg-amber-200 text-amber-800',
-    'bg-sky-200 text-sky-800',
-    'bg-rose-200 text-rose-800',
-    'bg-green-200 text-green-800',
-    'bg-violet-200 text-violet-800',
-  ]
-  const i = Array.from(name).reduce((s, c) => s + c.charCodeAt(0), 0) % palette.length
-  return palette[i]
 }
 
 export default async function HomePage({
@@ -95,6 +71,146 @@ export default async function HomePage({
 
   const { data, error } = await brewsQuery
   const brews = (data ?? []) as unknown as BrewRow[]
+
+  // Build friend bean cards (Friends view only) — group brews by (user, bean), pick best/latest
+  let friendBeanCards: FriendBeanCard[] = []
+  if (isFriendsView && friendIds.length > 0) {
+    const grouped = new Map<string, BrewRow[]>()
+    for (const b of brews) {
+      if (!b.bean || !b.user) continue
+      const key = `${b.user.id}::${b.bean.id}`
+      const arr = grouped.get(key) ?? []
+      arr.push(b)
+      grouped.set(key, arr)
+    }
+    for (const [, group] of grouped) {
+      const first = group[0]
+      if (!first.bean || !first.user) continue
+      const recipe = pickRecipe(group)!
+      const latestBrewAt = group.reduce(
+        (max, b) =>
+          new Date(b.created_at).getTime() > new Date(max).getTime() ? b.created_at : max,
+        group[0].created_at
+      )
+      const starredAt =
+        group.filter((b) => b.is_best).reduce<string | null>((latest, b) => {
+          if (!latest || new Date(b.created_at).getTime() > new Date(latest).getTime()) {
+            return b.created_at
+          }
+          return latest
+        }, null)
+      friendBeanCards.push({
+        beanId: first.bean.id,
+        beanName: first.bean.name,
+        beanSlug: first.bean.slug,
+        beanRoaster: first.bean.roaster,
+        beanOrigin: first.bean.origin,
+        user: first.user,
+        brewCount: group.length,
+        hasExplicitStar: recipe.hasExplicitStar,
+        hasRatingVariance: recipe.hasRatingVariance,
+        recipeLabel: recipe.label,
+        recipe: {
+          id: recipe.brew.id,
+          dose_g: recipe.brew.dose_g,
+          water_ml: recipe.brew.water_ml,
+          grind_xbloom: recipe.brew.grind_xbloom,
+          water_temp_c: recipe.brew.water_temp_c,
+          time_seconds: recipe.brew.time_seconds,
+          rating: recipe.brew.rating,
+          created_at: recipe.brew.created_at,
+        },
+        latestBrewAt,
+        latestStarredAt: starredAt,
+      })
+    }
+  }
+
+  // Bookmarks + bean-card prep (Mine view only)
+  let beanCards: BeanCardData[] = []
+  let unbrewedBookmarks: UnbrewedBookmark[] = []
+  if (!isFriendsView) {
+    const brewedBeanIds = new Set(brews.map((b) => b.bean?.id).filter(Boolean) as string[])
+
+    const { data: bookmarks } = await supabase
+      .from('bean_bookmarks')
+      .select('bean:beans(id, name, slug, roaster, origin), created_at')
+      .eq('user_id', user.id)
+      .order('created_at', { ascending: false })
+
+    const bookmarkedIds = new Set<string>()
+    for (const row of bookmarks ?? []) {
+      const b = (row.bean as unknown) as UnbrewedBookmark | null
+      if (!b) continue
+      bookmarkedIds.add(b.id)
+      if (!brewedBeanIds.has(b.id)) {
+        unbrewedBookmarks.push(b)
+      }
+    }
+
+    // Group brews by bean
+    const byBean = new Map<
+      string,
+      { bean: NonNullable<BrewRow['bean']>; brews: BrewForPicker[] }
+    >()
+    for (const b of brews) {
+      if (!b.bean) continue
+      const entry = byBean.get(b.bean.id)
+      const brewOnly: BrewForPicker = {
+        id: b.id,
+        dose_g: b.dose_g,
+        water_ml: b.water_ml,
+        grind_xbloom: b.grind_xbloom,
+        water_temp_c: b.water_temp_c,
+        time_seconds: b.time_seconds,
+        rating: b.rating,
+        notes: b.notes,
+        is_best: b.is_best,
+        created_at: b.created_at,
+      }
+      if (entry) entry.brews.push(brewOnly)
+      else byBean.set(b.bean.id, { bean: b.bean, brews: [brewOnly] })
+    }
+
+    beanCards = Array.from(byBean.values())
+      .map(({ bean, brews }) => {
+        const recipe = pickRecipe(brews)!
+        return {
+          beanId: bean.id,
+          name: bean.name,
+          slug: bean.slug,
+          roaster: bean.roaster,
+          origin: bean.origin,
+          brewCount: brews.length,
+          avgRating: avgRating(brews),
+          hasExplicitStar: recipe.hasExplicitStar,
+          hasRatingVariance: recipe.hasRatingVariance,
+          recipeLabel: recipe.label,
+          isBookmarked: bookmarkedIds.has(bean.id),
+          recipe: {
+            dose_g: recipe.brew.dose_g,
+            water_ml: recipe.brew.water_ml,
+            grind_xbloom: recipe.brew.grind_xbloom,
+            water_temp_c: recipe.brew.water_temp_c,
+            time_seconds: recipe.brew.time_seconds,
+            created_at: recipe.brew.created_at,
+          },
+          _maxRating: Math.max(...brews.map((b) => b.rating)),
+          _latestTs: Math.max(
+            ...brews.map((b) => new Date(b.created_at).getTime())
+          ),
+        }
+      })
+      .sort((a, b) => {
+        if (b._maxRating !== a._maxRating) return b._maxRating - a._maxRating
+        return b._latestTs - a._latestTs
+      })
+      .map(({ _maxRating, _latestTs, ...rest }) => {
+        void _maxRating
+        void _latestTs
+        return rest
+      })
+  }
 
   return (
     <main className="max-w-md mx-auto min-h-screen bg-stone-50 border-x border-stone-200">
@@ -174,188 +290,15 @@ export default async function HomePage({
         )}
 
         {isFriendsView ? (
-          <FriendsFeed brews={brews} />
+          <HomeFriendsView cards={friendBeanCards} />
         ) : (
-          <MyBeans brews={brews} />
+          <HomeMineView
+            beanCards={beanCards}
+            unbrewedBookmarks={unbrewedBookmarks}
+          />
         )}
       </section>
     </main>
   )
 }
 
-function MyBeans({ brews }: { brews: BrewRow[] }) {
-  // Group by bean
-  const byBean = new Map<
-    string,
-    { bean: NonNullable<BrewRow['bean']>; brews: BrewForPicker[] }
-  >()
-  for (const b of brews) {
-    if (!b.bean) continue
-    const entry = byBean.get(b.bean.id)
-    const brewOnly: BrewForPicker = {
-      id: b.id,
-      dose_g: b.dose_g,
-      water_ml: b.water_ml,
-      grind_xbloom: b.grind_xbloom,
-      water_temp_c: b.water_temp_c,
-      time_seconds: b.time_seconds,
-      rating: b.rating,
-      notes: b.notes,
-      is_best: b.is_best,
-      created_at: b.created_at,
-    }
-    if (entry) entry.brews.push(brewOnly)
-    else byBean.set(b.bean.id, { bean: b.bean, brews: [brewOnly] })
-  }
-
-  const beanCards = Array.from(byBean.values())
-    .map(({ bean, brews }) => {
-      const recipe = pickRecipe(brews)!
-      return {
-        bean,
-        brews,
-        recipe,
-        maxRating: Math.max(...brews.map((b) => b.rating)),
-        latestTs: Math.max(...brews.map((b) => new Date(b.created_at).getTime())),
-        avg: avgRating(brews),
-      }
-    })
-    .sort((a, b) => {
-      if (b.maxRating !== a.maxRating) return b.maxRating - a.maxRating
-      return b.latestTs - a.latestTs
-    })
-
-  if (beanCards.length === 0) {
-    return (
-      <div className="rounded-2xl bg-white border border-stone-200 p-6 text-center text-sm text-stone-600">
-        No beans yet. Log your first brew or import from Obsidian in Settings.
-      </div>
-    )
-  }
-
-  return (
-    <>
-      <div className="flex items-center justify-between mb-3">
-        <h2 className="font-medium text-stone-800">Your beans · {beanCards.length}</h2>
-        <span className="text-xs text-stone-500">Highest rated first</span>
-      </div>
-      <div className="space-y-3">
-        {beanCards.map(({ bean, brews, recipe, avg }) => {
-          const showStars = recipe.hasRatingVariance || recipe.hasExplicitStar
-          const b = recipe.brew
-          const ratio =
-            b.water_ml != null && b.dose_g > 0
-              ? (b.water_ml / b.dose_g).toFixed(1)
-              : null
-          return (
-            <Link
-              key={bean.id}
-              href={`/beans/${bean.slug}`}
-              className="block bg-white rounded-2xl p-4 border border-stone-200 hover:border-stone-300 active:bg-stone-50"
-            >
-              <div className="flex items-start justify-between">
-                <div className="min-w-0">
-                  <div className="font-medium text-stone-900 truncate">{bean.name}</div>
-                  <div className="text-xs text-stone-500 mt-0.5">
-                    {[bean.origin, bean.roaster].filter(Boolean).join(' · ')}
-                    {bean.origin || bean.roaster ? ' · ' : ''}
-                    {brews.length} brew{brews.length === 1 ? '' : 's'} · last{' '}
-                    {formatRelative(b.created_at)}
-                  </div>
-                </div>
-                {showStars && (
-                  <div className="text-sm text-amber-500 shrink-0 ml-2">
-                    {formatStars(avg)}
-                  </div>
-                )}
-              </div>
-              <div className="mt-3 text-[10px] uppercase tracking-wider text-stone-500">
-                {recipe.label} recipe
-              </div>
-              <div className="mt-1 flex gap-2 text-sm text-stone-800 flex-wrap">
-                <span>{b.dose_g}g</span>
-                {b.water_ml != null && <><span className="text-stone-300">·</span><span>{b.water_ml}ml</span></>}
-                {ratio && <><span className="text-stone-300">·</span><span>1:{ratio}</span></>}
-                {b.water_temp_c != null && <><span className="text-stone-300">·</span><span>{b.water_temp_c}°C</span></>}
-                {b.grind_xbloom != null && <><span className="text-stone-300">·</span><span>grind {b.grind_xbloom}</span></>}
-                {b.time_seconds != null && <><span className="text-stone-300">·</span><span className="font-medium">{formatTime(b.time_seconds)}</span></>}
-              </div>
-            </Link>
-          )
-        })}
-      </div>
-    </>
-  )
-}
-
-function FriendsFeed({ brews }: { brews: BrewRow[] }) {
-  if (brews.length === 0) {
-    return (
-      <div className="rounded-2xl bg-white border border-stone-200 p-6 text-center text-sm text-stone-600">
-        Nothing from friends yet. Add a friend by username in <Link href="/settings" className="underline">Settings</Link>, then they&apos;ll show up here when they log brews.
-      </div>
-    )
-  }
-  return (
-    <>
-      <div className="mb-3">
-        <h2 className="font-medium text-stone-800">Friends&apos; recent brews</h2>
-      </div>
-      <div className="space-y-3">
-        {brews.map((b) => {
-          const ratio =
-            b.water_ml != null && b.dose_g > 0
-              ? (b.water_ml / b.dose_g).toFixed(1)
-              : null
-          const handle = b.user?.username ?? '?'
-          const displayName = b.user?.display_name ?? handle
-          return (
-            <Link
-              key={b.id}
-              href={b.bean ? `/beans/${b.bean.slug}` : '#'}
-              className="block bg-white rounded-2xl p-4 border border-stone-200 hover:border-stone-300 active:bg-stone-50"
-            >
-              <div className="flex items-center gap-2 text-xs text-stone-500">
-                <span
-                  className={`w-6 h-6 rounded-full inline-flex items-center justify-center font-semibold ${avatarColor(
-                    handle
-                  )}`}
-                >
-                  {(displayName?.[0] ?? '?').toUpperCase()}
-                </span>
-                <span>
-                  <b className="text-stone-700">{displayName}</b> ·{' '}
-                  {formatRelative(b.created_at)}
-                </span>
-              </div>
-              <div className="mt-2 flex items-start justify-between">
-                <div className="min-w-0">
-                  <div className="font-medium text-stone-900 truncate">
-                    {b.bean?.name ?? 'Unknown'}
-                  </div>
-                  <div className="text-xs text-stone-500 mt-0.5">
-                    {[b.bean?.origin, b.bean?.roaster].filter(Boolean).join(' · ')}
-                  </div>
-                </div>
-                <div className="text-sm text-amber-500 shrink-0 ml-2">
-                  {formatStars(b.rating)}
-                </div>
-              </div>
-              <div className="mt-2 flex gap-2 text-sm text-stone-800 flex-wrap">
-                <span>{b.dose_g}g</span>
-                {b.water_ml != null && <><span className="text-stone-300">·</span><span>{b.water_ml}ml</span></>}
-                {ratio && <><span className="text-stone-300">·</span><span>1:{ratio}</span></>}
-                {b.water_temp_c != null && <><span className="text-stone-300">·</span><span>{b.water_temp_c}°C</span></>}
-                {b.grind_xbloom != null && <><span className="text-stone-300">·</span><span>grind {b.grind_xbloom}</span></>}
-                {b.time_seconds != null && <><span className="text-stone-300">·</span><span className="font-medium">{formatTime(b.time_seconds)}</span></>}
-              </div>
-              {b.notes && (
-                <div className="text-xs text-stone-600 mt-1 italic">&ldquo;{b.notes}&rdquo;</div>
-              )}
-            </Link>
-          )
-        })}
-      </div>
-    </>
-  )
-}

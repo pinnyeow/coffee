@@ -8,6 +8,7 @@ import {
   formatRelative,
   type BrewForPicker,
 } from '@/lib/recipe-picker'
+import BookmarkToggle from './bookmark-toggle'
 
 type BrewRow = BrewForPicker
 
@@ -27,7 +28,8 @@ function prefillUrl(
   b: BrewRow,
   beanName: string,
   roaster: string | null,
-  origin: string | null
+  origin: string | null,
+  attributeFromOwnerId?: string
 ) {
   const params = new URLSearchParams()
   params.set('bean', beanName)
@@ -42,6 +44,9 @@ function prefillUrl(
     const s = b.time_seconds % 60
     params.set('time', `${m}:${s.toString().padStart(2, '0')}`)
   }
+  // Only attribute when the source brew is from someone *else*.
+  // Reusing your own settings is just iteration, not "adapted from".
+  if (attributeFromOwnerId) params.set('from', b.id)
   return `/log?${params.toString()}`
 }
 
@@ -63,17 +68,26 @@ export default async function BeanDetailPage({
 
   if (!bean) notFound()
 
+  const { data: bookmarkRow } = await supabase
+    .from('bean_bookmarks')
+    .select('user_id')
+    .eq('user_id', user.id)
+    .eq('bean_id', bean.id)
+    .maybeSingle()
+  const isBookmarked = Boolean(bookmarkRow)
+
   // My brews
   const { data: myBrewsData } = await supabase
     .from('brews')
     .select(
-      'id, dose_g, water_ml, grind_xbloom, water_temp_c, time_seconds, rating, notes, is_best, created_at'
+      'id, dose_g, water_ml, grind_xbloom, water_temp_c, time_seconds, rating, notes, is_best, visibility, created_at'
     )
     .eq('bean_id', bean.id)
     .eq('user_id', user.id)
     .order('created_at', { ascending: false })
 
-  const brews = (myBrewsData ?? []) as BrewRow[]
+  type MyBrewRow = BrewRow & { visibility: string }
+  const brews = (myBrewsData ?? []) as MyBrewRow[]
   const recipe = pickRecipe(brews)
   const hasVariance = brewsHaveRatingVariance(brews)
   const avg = avgRating(brews)
@@ -123,6 +137,20 @@ export default async function BeanDetailPage({
     }
   }
 
+  // Friends who have THIS bean on their Want-to-try list (RLS gates by share_want_to_try flag)
+  type FriendBookmarker = { username: string | null; display_name: string | null }
+  let friendBookmarkers: FriendBookmarker[] = []
+  if (friendIds.length > 0) {
+    const { data: fbms } = await supabase
+      .from('bean_bookmarks')
+      .select('user:users(username, display_name)')
+      .eq('bean_id', bean.id)
+      .in('user_id', friendIds)
+    friendBookmarkers = ((fbms ?? []) as unknown as { user: FriendBookmarker | null }[])
+      .map((r) => r.user)
+      .filter((u): u is FriendBookmarker => Boolean(u))
+  }
+
   const best = recipe?.brew
   const ratio =
     best && best.water_ml != null && best.dose_g > 0
@@ -137,10 +165,17 @@ export default async function BeanDetailPage({
       </header>
 
       <div className="px-6">
-        <div className="text-xs text-stone-500">
-          {[bean.roaster, bean.origin].filter(Boolean).join(' · ') || ' '}
+        <div className="flex items-start justify-between gap-3">
+          <div className="min-w-0 flex-1">
+            <div className="text-xs text-stone-500">
+              {[bean.roaster, bean.origin].filter(Boolean).join(' · ') || ' '}
+            </div>
+            <h1 className="text-2xl font-semibold text-stone-900 mt-1">{bean.name}</h1>
+          </div>
+          <div className="shrink-0">
+            <BookmarkToggle beanId={bean.id} initialBookmarked={isBookmarked} />
+          </div>
         </div>
-        <h1 className="text-2xl font-semibold text-stone-900 mt-1">{bean.name}</h1>
         {(bean.purchased_country || bean.purchased_city || bean.purchased_at) && (
           <div className="text-xs text-stone-500 mt-1">
             Bought in{' '}
@@ -206,6 +241,17 @@ export default async function BeanDetailPage({
         </div>
       )}
 
+      {friendBookmarkers.length > 0 && (
+        <div className="px-6 mt-4">
+          <div className="rounded-xl bg-amber-50 border border-amber-200 px-3 py-2 text-xs text-amber-900">
+            ★ Want-to-try by{' '}
+            {friendBookmarkers
+              .map((u) => u.display_name ?? (u.username ? `@${u.username}` : 'a friend'))
+              .join(', ')}
+          </div>
+        </div>
+      )}
+
       {friendRecipes.length > 0 && (
         <section className="px-6 mt-5">
           <div className="text-[11px] uppercase tracking-wider text-stone-500 mb-2">
@@ -220,29 +266,37 @@ export default async function BeanDetailPage({
               const handle = fr.user.username ?? '?'
               const displayName = fr.user.display_name ?? handle
               return (
-                <Link
+                <div
                   key={fr.user.id}
-                  href={`/brews/${fr.brew.id}`}
-                  className="block bg-white rounded-2xl p-3 border border-stone-200 hover:border-stone-300"
+                  className="bg-white rounded-2xl p-3 border border-stone-200"
                 >
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <div className="text-xs text-stone-500">
-                        <b className="text-stone-700">{displayName}</b>&apos;s {fr.label.toLowerCase()} ·{' '}
-                        {formatStars(fr.brew.rating)}
-                      </div>
-                      <div className="text-xs big-num mt-0.5 text-stone-700 flex gap-2 flex-wrap">
-                        <span>{fr.brew.dose_g}g</span>
-                        {fr.brew.water_ml != null && <><span className="text-stone-300">·</span><span>{fr.brew.water_ml}ml</span></>}
-                        {ratio && <><span className="text-stone-300">·</span><span>1:{ratio}</span></>}
-                        {fr.brew.water_temp_c != null && <><span className="text-stone-300">·</span><span>{fr.brew.water_temp_c}°C</span></>}
-                        {fr.brew.grind_xbloom != null && <><span className="text-stone-300">·</span><span>grind {fr.brew.grind_xbloom}</span></>}
-                        {fr.brew.time_seconds != null && <><span className="text-stone-300">·</span><span>{formatTime(fr.brew.time_seconds)}</span></>}
-                      </div>
-                    </div>
-                    <span className="text-xs text-stone-400">›</span>
+                  <div className="text-xs text-stone-500">
+                    <b className="text-stone-700">{displayName}</b>&apos;s {fr.label.toLowerCase()} ·{' '}
+                    {formatStars(fr.brew.rating)}
                   </div>
-                </Link>
+                  <div className="text-xs big-num mt-0.5 text-stone-700 flex gap-2 flex-wrap">
+                    <span>{fr.brew.dose_g}g</span>
+                    {fr.brew.water_ml != null && <><span className="text-stone-300">·</span><span>{fr.brew.water_ml}ml</span></>}
+                    {ratio && <><span className="text-stone-300">·</span><span>1:{ratio}</span></>}
+                    {fr.brew.water_temp_c != null && <><span className="text-stone-300">·</span><span>{fr.brew.water_temp_c}°C</span></>}
+                    {fr.brew.grind_xbloom != null && <><span className="text-stone-300">·</span><span>grind {fr.brew.grind_xbloom}</span></>}
+                    {fr.brew.time_seconds != null && <><span className="text-stone-300">·</span><span>{formatTime(fr.brew.time_seconds)}</span></>}
+                  </div>
+                  <div className="flex gap-2 mt-2">
+                    <Link
+                      href={prefillUrl(fr.brew, bean.name, bean.roaster, bean.origin, fr.user.id)}
+                      className="flex-1 bg-stone-900 text-white rounded-lg py-2 text-xs font-medium text-center"
+                    >
+                      Use these settings →
+                    </Link>
+                    <Link
+                      href={`/brews/${fr.brew.id}`}
+                      className="bg-stone-100 rounded-lg py-2 px-3 text-xs text-stone-700"
+                    >
+                      View
+                    </Link>
+                  </div>
+                </div>
               )
             })}
           </div>
@@ -285,6 +339,7 @@ export default async function BeanDetailPage({
               <div className="flex items-start justify-between">
                 <div className="text-xs text-stone-500 flex items-center gap-2">
                   {b.id === best?.id && <span className="text-amber-500">★</span>}
+                  {b.visibility === 'self' && <span title="Private">🔒</span>}
                   {formatRelative(b.created_at)}
                 </div>
                 {hasVariance && (

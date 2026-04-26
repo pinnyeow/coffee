@@ -18,6 +18,10 @@ const UpdateBrewSchema = z.object({
     .union([z.literal('on'), z.literal('true'), z.literal('false'), z.literal('')])
     .optional()
     .transform((v) => v === 'on' || v === 'true'),
+  is_private: z
+    .union([z.literal('on'), z.literal('true'), z.literal('false'), z.literal('')])
+    .optional()
+    .transform((v) => v === 'on' || v === 'true'),
 })
 
 export async function updateBrew(
@@ -74,6 +78,7 @@ export async function updateBrew(
       rating: input.rating,
       notes: input.notes,
       is_best: input.is_best,
+      visibility: input.is_private ? 'self' : 'friends',
     })
     .eq('id', id)
     .eq('user_id', user.id)
@@ -126,6 +131,15 @@ const BrewInputSchema = z.object({
   time_str: z.string().optional().transform((v) => v?.trim() || ''),
   rating: z.coerce.number().int().min(1).max(5),
   notes: z.string().max(2000).optional().transform((v) => v?.trim() || null),
+  derived_from_brew_id: z
+    .string()
+    .uuid()
+    .optional()
+    .or(z.literal('').transform(() => undefined)),
+  is_private: z
+    .union([z.literal('on'), z.literal('true'), z.literal('false'), z.literal('')])
+    .optional()
+    .transform((v) => v === 'on' || v === 'true'),
 })
 
 export type BrewFormState = {
@@ -210,6 +224,8 @@ export async function saveBrew(
     time_seconds: timeSeconds,
     rating: input.rating,
     notes: input.notes,
+    derived_from_brew_id: input.derived_from_brew_id ?? null,
+    visibility: input.is_private ? 'self' : 'friends',
   })
 
   if (brewError) {

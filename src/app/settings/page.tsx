@@ -3,6 +3,7 @@ import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import ProfileActions from './profile-actions'
 import FriendsSection from './friends-section'
+import ShareWantToTryToggle from './share-want-to-try-toggle'
 
 type ProfileRow = {
   id: string
@@ -40,7 +41,7 @@ export default async function SettingsPage() {
 
   const { data: settings } = await supabase
     .from('settings')
-    .select('onboarded_from_obsidian')
+    .select('onboarded_from_obsidian, share_want_to_try')
     .eq('user_id', user.id)
     .maybeSingle()
 
@@ -147,6 +148,9 @@ export default async function SettingsPage() {
             pendingOutgoing={pendingOutgoing}
             accepted={accepted}
           />
+          <div className="mt-4">
+            <ShareWantToTryToggle initial={Boolean(settings?.share_want_to_try)} />
+          </div>
         </section>
 
         <section>

@@ -13,6 +13,7 @@ type Defaults = {
   rating: number
   notes: string
   is_best: boolean
+  is_private: boolean
 }
 
 export default function EditBrewForm({
@@ -29,6 +30,7 @@ export default function EditBrewForm({
   )
   const [rating, setRating] = useState<number>(defaults.rating)
   const [isBest, setIsBest] = useState<boolean>(defaults.is_best)
+  const [isPrivate, setIsPrivate] = useState<boolean>(defaults.is_private)
   const [dose, setDose] = useState(defaults.dose_g)
   const [water, setWater] = useState(defaults.water_ml)
   const [deletePending, startDelete] = useTransition()
@@ -148,6 +150,17 @@ export default function EditBrewForm({
           className="w-4 h-4"
         />
         <span>★ Mark as best brew for this bean</span>
+      </label>
+
+      <label className="flex items-center gap-2 text-sm text-stone-700">
+        <input
+          type="checkbox"
+          name="is_private"
+          checked={isPrivate}
+          onChange={(e) => setIsPrivate(e.target.checked)}
+          className="w-4 h-4"
+        />
+        <span>🔒 Private — only me can see this brew</span>
       </label>
 
       <button
