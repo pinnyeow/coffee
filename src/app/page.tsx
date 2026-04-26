@@ -6,7 +6,10 @@ import HomeMineView, {
   type BeanCardData,
   type UnbrewedBookmark,
 } from './home-mine-view'
-import HomeFriendsView, { type FriendBeanCard } from './home-friends-view'
+import HomeFriendsView, {
+  type FriendBeanCard,
+  type FriendBookmark,
+} from './home-friends-view'
 
 type BrewRow = BrewForPicker & {
   bean: {
@@ -71,6 +74,24 @@ export default async function HomePage({
 
   const { data, error } = await brewsQuery
   const brews = (data ?? []) as unknown as BrewRow[]
+
+  // Build friend bookmarks (RLS gates by share_want_to_try flag)
+  let friendBookmarks: FriendBookmark[] = []
+  if (isFriendsView && friendIds.length > 0) {
+    const { data: rawBookmarks } = await supabase
+      .from('bean_bookmarks')
+      .select(
+        'bean:beans(id, name, slug, roaster, origin), user:users(username, display_name)'
+      )
+      .in('user_id', friendIds)
+      .order('created_at', { ascending: false })
+    friendBookmarks = ((rawBookmarks ?? []) as unknown as {
+      bean: FriendBookmark['bean'] | null
+      user: FriendBookmark['user'] | null
+    }[])
+      .filter((r) => r.bean && r.user)
+      .map((r) => ({ bean: r.bean!, user: r.user! }))
+  }
 
   // Build friend bean cards (Friends view only) — group brews by (user, bean), pick best/latest
   let friendBeanCards: FriendBeanCard[] = []
@@ -290,7 +311,7 @@ export default async function HomePage({
         )}
 
         {isFriendsView ? (
-          <HomeFriendsView cards={friendBeanCards} />
+          <HomeFriendsView cards={friendBeanCards} bookmarks={friendBookmarks} />
         ) : (
           <HomeMineView
             beanCards={beanCards}

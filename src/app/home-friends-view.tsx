@@ -29,6 +29,11 @@ export type FriendBeanCard = {
   latestStarredAt: string | null
 }
 
+export type FriendBookmark = {
+  bean: { id: string; name: string; slug: string; roaster: string | null; origin: string | null }
+  user: { username: string | null; display_name: string | null }
+}
+
 type Filter = 'all' | 'starred'
 
 function formatTime(seconds: number | null) {
@@ -69,8 +74,10 @@ function avatarColor(name: string) {
 
 export default function HomeFriendsView({
   cards,
+  bookmarks,
 }: {
   cards: FriendBeanCard[]
+  bookmarks: FriendBookmark[]
 }) {
   const [filter, setFilter] = useState<Filter>('all')
   const [query, setQuery] = useState('')
@@ -103,7 +110,18 @@ export default function HomeFriendsView({
     return list
   }, [cards, filter, q])
 
-  if (cards.length === 0) {
+  const visibleBookmarks = useMemo(() => {
+    if (filter !== 'all') return []
+    if (!q) return bookmarks
+    return bookmarks.filter((b) => {
+      const haystack = `${b.bean.name} ${b.bean.roaster ?? ''} ${b.bean.origin ?? ''} ${
+        b.user.display_name ?? ''
+      } ${b.user.username ?? ''}`.toLowerCase()
+      return haystack.includes(q)
+    })
+  }, [bookmarks, filter, q])
+
+  if (cards.length === 0 && bookmarks.length === 0) {
     return (
       <div className="rounded-2xl bg-white border border-stone-200 p-6 text-center text-sm text-stone-600">
         Nothing from friends yet. Add a friend by username in{' '}
@@ -148,6 +166,43 @@ export default function HomeFriendsView({
           onClick={() => setFilter('starred')}
         />
       </div>
+
+      {visibleBookmarks.length > 0 && (
+        <div className="mb-5">
+          <div className="text-[11px] uppercase tracking-wider text-stone-500 mb-2">
+            Friends want to try · {visibleBookmarks.length}
+          </div>
+          <div className="space-y-2">
+            {visibleBookmarks.map((bm, i) => {
+              const handle = bm.user.username ?? '?'
+              const displayName = bm.user.display_name ?? handle
+              return (
+                <Link
+                  key={`${bm.bean.id}-${i}`}
+                  href={`/beans/${bm.bean.slug}`}
+                  className="block bg-amber-50 rounded-2xl p-3 border border-amber-200 hover:border-amber-300"
+                >
+                  <div className="flex items-center justify-between gap-2">
+                    <div className="min-w-0">
+                      <div className="text-xs text-stone-600">
+                        <b className="text-stone-800">{displayName}</b> wants to try
+                      </div>
+                      <div className="font-medium text-stone-900 truncate mt-0.5">
+                        {bm.bean.name}
+                      </div>
+                      <div className="text-xs text-stone-500 mt-0.5">
+                        {[bm.bean.origin, bm.bean.roaster].filter(Boolean).join(' · ') ||
+                          'No details yet'}
+                      </div>
+                    </div>
+                    <span className="text-amber-600 text-sm shrink-0">★</span>
+                  </div>
+                </Link>
+              )
+            })}
+          </div>
+        </div>
+      )}
 
       {visibleCards.length > 0 ? (
         <>
@@ -216,13 +271,15 @@ export default function HomeFriendsView({
           </div>
         </>
       ) : (
-        <div className="rounded-2xl bg-white border border-stone-200 p-6 text-center text-sm text-stone-600">
-          {q
-            ? `No matches for "${query}"`
-            : filter === 'starred'
-            ? 'No starred brews from friends yet.'
-            : 'Nothing matches.'}
-        </div>
+        visibleBookmarks.length === 0 && (
+          <div className="rounded-2xl bg-white border border-stone-200 p-6 text-center text-sm text-stone-600">
+            {q
+              ? `No matches for "${query}"`
+              : filter === 'starred'
+              ? 'No starred brews from friends yet.'
+              : 'Nothing matches.'}
+          </div>
+        )
       )}
     </>
   )
