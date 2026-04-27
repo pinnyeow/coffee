@@ -180,7 +180,7 @@ export default function WelcomePage() {
         </p>
 
         <ul className="mt-4 space-y-3 text-stone-700 list-disc pl-6">
-          <li>Every time I pick up a bag I&apos;ve already dialed in, I scroll past 20 attempts trying to find the recipe and the notes that got me there.</li>
+          <li>Every time Pin picks up a bag she&apos;s already dialed in, Pin scrolls past 20 attempts trying to find the recipe and the notes that got her there.</li>
           <li>Sharing recipes with friends was awkward. Michael (her partner, espresso person) couldn&apos;t use her xBloom dial numbers. A friend on a V60 needed translation. &ldquo;15g, grind 59, 80 RPM&rdquo; was useless to anyone without her exact gear.</li>
         </ul>
 
@@ -206,15 +206,6 @@ export default function WelcomePage() {
             Postgres-backed, exportable as JSON, never sold.
           </Belief>
         </div>
-
-        <h3 className="font-semibold text-stone-900 mt-10 text-lg">What we won&apos;t do</h3>
-        <ul className="mt-4 space-y-2 text-stone-700 list-disc pl-6 leading-relaxed">
-          <li>Public feed of strangers</li>
-          <li>Sell your data to advertisers</li>
-          <li>Aggressive growth tactics (no contact-bombing, no &ldquo;share to unlock&rdquo; gates)</li>
-          <li>Become a roaster marketplace — Pour helps you brew what you already bought</li>
-          <li>Generate AI tasting notes (today&apos;s &ldquo;AI tasting&rdquo; features are usually noise)</li>
-        </ul>
 
         <div className="mt-10 italic text-stone-700 border-l-[3px] border-amber-600 pl-4">
           Pour is small on purpose. It&apos;s for the kind of person who thinks 0.5 grams matter on the dial. If that&apos;s you, welcome.
