@@ -146,7 +146,7 @@ export default function WelcomePage() {
             Most coffee apps are roaster catalogs or one-size-fits-all loggers. Pour is built for people who <b>dial in</b> — multiple attempts on the same bean, tracking what changed, surfacing the keeper. The unit of the app is a bean, not a transaction.
           </Difference>
           <Difference title="vs. just texting recipes to friends">
-            When you send Michael &ldquo;15g, grind 59, 80 RPM, 225ml&rdquo; he has no idea what to do unless he also has an xBloom. Pour translates <b>the same recipe</b> into &ldquo;Medium grind, 92°C, 1:15 ratio, 3:14 brew time&rdquo; — universal across pour-over gear.
+            When you send Michael &ldquo;15g, grind 59, 80 RPM, 225ml&rdquo; he has no idea what to do unless he also has an xBloom. Pour translates <b>the same recipe</b>{' '}into &ldquo;Medium grind, 92°C, 1:15 ratio, 3:14 brew time&rdquo; — universal across pour-over gear.
           </Difference>
         </div>
 
