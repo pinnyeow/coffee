@@ -53,6 +53,8 @@ Living doc of what's shipped, what's next, and what's on the shelf. Update as de
 
 ## 🟡 Up next
 
+**Recommended order**: Polish → Cold-start + Getting Started → v5 (Espresso). Total ~6.5 hrs.
+
 ### Polish pass (~2 hrs total) — recommended before v5
 - [ ] **Desktop framing**: subtle background gradient, slightly wider column on `md+`, persistent top header with logo + sign-out
 - [ ] **PWA basics**: manifest, iOS meta tags, app icon — "Add to Home Screen" on iOS works as fullscreen app
@@ -135,6 +137,8 @@ Living doc of what's shipped, what's next, and what's on the shelf. Update as de
 ### Cold-start + virality (when Pin sends a link to a friend)
 The hardest problem for a friends-first app: a brand-new user lands and the app feels empty.
 
+**Bundles with the Getting Started page below — both are first-time-experience work.**
+
 - [ ] **Personalized invite links** — `mypour.app/i/<invite-token>` → landing page says "Pin invited you to Pour"
 - [ ] **Auto-friend on invite acceptance** — Michael clicks Pin's link, signs up, lands signed in AND already friends with Pin (skips the username-search step)
 - [ ] **Public preview before sign-up** — if invitee clicks link, show a teaser of Pin's most recent brew or starred recipe BEFORE asking them to sign in. Lowers friction.
@@ -143,6 +147,40 @@ The hardest problem for a friends-first app: a brand-new user lands and the app 
 - [ ] **Onboarding flow that highlights friend's data** — after Michael signs up via Pin's invite, first-run screen shows "Here's what Pin has been brewing" with her best 3 recipes. Instant value, even before he logs anything.
 - [ ] **Share link templates that explain Pour** — when Pin sends `mypour.app/i/abc`, the OpenGraph preview that renders in iMessage/WhatsApp shows: "Pour — coffee journal · Pin invited you" with a clean image
 - [ ] **Username + display-name set during sign-up** (currently username auto-derived from email; have new users pick a friendly display name on first run)
+
+### Getting Started page (`/welcome`, public)
+Doubles as the landing page when unauthenticated users hit `mypour.app/`.
+
+**Above the fold**
+- One-line description: *"A coffee journal that learns from your friends."*
+- Three category chips: `xBloom-native` · `Espresso` · `Friend recipes`
+- Primary CTA: **Get started** → sign-in. If landing via invite link, replace with "Pin invited you to Pour."
+
+**"What's Pour for" — 3-step core loop**
+1. **Log a brew** — 30 seconds, fields adapt to your method (xBloom, V60, espresso)
+2. **See your best** — Pour groups brews by bean and surfaces the recipe that worked. No more scrolling Obsidian.
+3. **Friends + recipes** — see what your friends are dialing in. Tap *Use these settings* to try theirs.
+
+**"What makes it different" — three differentiators**
+1. **xBloom precision, friend-portable** — exact dial settings stored AND auto-translated to "Medium grind, 92°C" for friends on V60/Chemex
+2. **Best vs Latest, automatic** — Pour picks the highest-rated brew when ratings differ; falls back to most-recent for fresh imports
+3. **Private by default optional** — every brew is friends-visible by default; one-tap 🔒 toggle for the ones you don't share
+
+**"Common questions"**
+- *"I don't have an xBloom — can I use this?"* Yes. The form adapts to V60, Chemex, AeroPress, espresso.
+- *"What if my friend has different gear?"* Share text auto-translates grind to a universal description.
+- *"Will my notes go to my friends?"* Only if you leave the brew on default friends-visible. Mark private with one tap.
+- *"Can I import my old journal?"* Yes — Settings → Import from Obsidian (one-time, parses your `.md` file).
+
+**Footer CTA**
+- "Get started" or "Sign in to your invite"
+- Link to Settings → "About Pour" for existing users to re-read
+
+**Where it lives**
+- [ ] Public route: `/welcome`
+- [ ] Default landing for unauthenticated users hitting `mypour.app/`
+- [ ] Linkable from Settings → "About Pour"
+- [ ] Personalized variant when arriving via invite link (`/i/<token>`)
 
 ---
 
