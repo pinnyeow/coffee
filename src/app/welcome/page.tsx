@@ -46,9 +46,6 @@ export default function WelcomePage() {
           </a>
         </div>
 
-        <div className="mt-8 text-xs text-stone-500">
-          Free during early access · No credit card · Magic-link sign-in (no password)
-        </div>
       </section>
 
       {/* What */}
