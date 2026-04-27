@@ -134,7 +134,7 @@ export default function WelcomePage() {
           <div className="bg-gradient-to-br from-stone-900 to-stone-700 text-white rounded-3xl p-6">
             <div className="text-xs uppercase tracking-wider text-stone-300">Pour · Universal Recipe</div>
             <div className="mt-2 text-xl font-semibold">Torahebi Banana</div>
-            <div className="text-sm text-stone-300">Ethiopia · Torahebi (Japan) · Pour over</div>
+            <div className="text-sm text-stone-300">Blend · Torahebi (Japan) · Pour over</div>
             <div className="mt-4 grid grid-cols-3 gap-3 text-center">
               <Stat label="DOSE" value="15g" />
               <Stat label="WATER" value="255ml" />
