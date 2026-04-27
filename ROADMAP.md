@@ -60,12 +60,47 @@ Living doc of what's shipped, what's next, and what's on the shelf. Update as de
 - [ ] **Better empty states**: helpful copy + small illustration/hint on every "nothing here yet" view
 - [ ] **Polished typography**: switch from system default to Inter or similar
 
-### v5 — Espresso & cross-method
-- [ ] Espresso fields on Log brew when method = Espresso (yield_g, time_s, drink_style)
-- [ ] Drink style selector: Espresso · Cortado · Latte · Flat white · Cappuccino · Americano · Macchiato
-- [ ] Bean detail shows espresso recipes side-by-side with pour over
-- [ ] "Try as espresso" CTA on a pour-over bean → starter espresso brew template
-- [ ] Default starter values per method in seeded global profiles
+### v5 — Espresso & cross-method (~3 hrs total)
+
+**Schema (migration 008)**
+- [ ] Add to `brews` table:
+  - `brew_method` (xBloom / V60 / Chemex / AeroPress / Espresso / French press / Cold brew) — default `xBloom` for backfill
+  - `drink_style` (Espresso / Cortado / Latte / Flat white / Cappuccino / Americano / Macchiato) — espresso-only, nullable
+  - `yield_g` (espresso shot output weight, nullable)
+  - `milk_ml` (optional, for cortado / latte)
+  - `pressure_bar` (optional)
+- [ ] Backfill existing brews → `brew_method = 'xBloom'`
+
+**Log brew form**
+- [ ] Method switcher at top
+- [ ] Form adapts per method:
+  - xBloom: existing fields (dose / grind / RPM / water / temp / time)
+  - Other pour over (V60 / Chemex / AeroPress): same minus RPM
+  - Espresso: dose_in / yield_out / grind / temp / time(s) / pressure / drink_style / milk_ml
+  - French press / Cold brew: dose / water / temp / steep_time
+- [ ] Profile picker filters to profiles matching the chosen method
+
+**Bean detail**
+- [ ] Recipes grouped by method — separate "Best pour-over" and "Best espresso" cards (a bean can be dialed in both ways)
+- [ ] Friend recipes split by method too
+- [ ] **"Try as espresso →"** CTA on a pour-over bean (pre-fills Log form with starter espresso defaults: 18g → 36g, 28s, 93°C, fine grind, drink_style=Espresso)
+- [ ] Reverse "Try as pour over" CTA on an espresso-only bean
+
+**Mine + Friends views**
+- [ ] Small method tag on each bean card (`xBloom`, `Espresso`, etc.)
+- [ ] New filter: **Method** (All / Pour over / Espresso) — composes with existing Starred / Want to try chips
+- [ ] Decision needed: a bean appears multiple times if dialed both ways, or one card with both methods nested?
+
+**Share**
+- [ ] Espresso share text uses dose / yield / time / temp / 1:2 (not 1:15-style ratio)
+- [ ] xBloom-only fields (RPM) only appear when method = xBloom
+
+**Universal translation polish**
+- [ ] Existing: xBloom grind dial → "Medium" descriptor (done)
+- [ ] Add: espresso grind translation ("≈ 5–6 on most home grinders") so Pin's xBloom-7 shares meaningfully to Michael
+
+**Settings seeding**
+- [ ] Auto-create a default "Espresso 1:2" profile on first sign-in for users who don't have one (so Michael isn't starting blank)
 
 ---
 
