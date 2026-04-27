@@ -51,7 +51,7 @@ One-time only. Imported brews default to ★★★☆☆ since the journal didn'
 
 ### Step 5 — Invite a friend
 
-Settings → **Friends** → share your username (e.g. `@pin`). When your friend signs up, they add you with the same form. Once you're connected, the **Friends** tab on Home shows their brews. Each card has a **Use these settings** button — try their recipe with attribution back to them on your brew.
+Settings → **Friends** → find your username (auto-generated from your email; you can edit it). Share it. When your friend signs up, they add you with the same form. Once you're connected, the **Friends** tab on Home shows their brews. Each card has a **Use these settings** button — try their recipe with attribution back to them on your brew.
 
 ---
 

@@ -2,7 +2,7 @@
 
 ## Why Pour exists
 
-Pin (a PM at Amazon) had been logging pour-over brews in Obsidian for years — every Torahebi, every Kenyan, every dial-in attempt at home on her xBloom. The notes worked, but two problems kept nagging:
+Pin had been logging pour-over brews in Obsidian for years — every Ethiopian, every Kenyan, every dial-in attempt at home on her xBloom. The notes worked, but two problems kept nagging:
 
 1. **Finding the best settings was annoying.** Every time she opened a new bag, she'd scroll past 20 attempts looking for "the one that finally worked." Sometimes she'd give up and just guess.
 2. **Sharing recipes with friends was awkward.** Michael (her partner, espresso person) couldn't use her xBloom dial numbers. A friend on a V60 needed translation. Sending "15g, grind 59, 80 RPM" to anyone who didn't have her exact gear was useless.
