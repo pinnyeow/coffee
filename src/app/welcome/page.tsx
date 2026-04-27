@@ -48,6 +48,31 @@ export default function WelcomePage() {
 
       </section>
 
+      {/* Prototype preview */}
+      <section className="px-6 py-14 max-w-3xl mx-auto border-t border-stone-200">
+        <Eyebrow>Preview</Eyebrow>
+        <H2>Click around the prototype</H2>
+        <p className="mt-3 text-stone-700 leading-relaxed">
+          An interactive walkthrough of the design — Home, Bean detail, friend invites, the share card. Tap any button to navigate.
+        </p>
+        <div className="mt-4 bg-amber-50 border border-amber-200 rounded-xl px-4 py-3 text-sm text-amber-900">
+          <b>Heads up — this is a prototype, not the live app.</b> Some screens preview features still being built. The shipped flow lives behind sign-in at <a href="/sign-in" className="underline">mypour.vercel.app</a>.
+        </div>
+        <div className="mt-6 rounded-2xl overflow-hidden border border-stone-200 bg-white">
+          <div className="px-4 py-2 bg-stone-100 border-b border-stone-200 text-[11px] text-stone-600 flex items-center gap-2">
+            <span className="inline-block w-2 h-2 rounded-full bg-amber-400"></span>
+            <span>Prototype · pour-prototype.surge.sh</span>
+          </div>
+          <iframe
+            src="https://pour-prototype.surge.sh/"
+            title="Pour interactive prototype"
+            className="w-full"
+            style={{ height: '900px', border: 0 }}
+            loading="lazy"
+          />
+        </div>
+      </section>
+
       {/* What */}
       <section id="what" className="px-6 py-14 max-w-3xl mx-auto border-t border-stone-200">
         <Eyebrow>What is Pour</Eyebrow>
@@ -151,11 +176,11 @@ export default function WelcomePage() {
         <H2>Why Pour exists</H2>
 
         <p className="text-stone-700 mt-6 leading-relaxed">
-          Pin had been logging pour-over brews in Obsidian for years — every Ethiopian, every Kenyan, every dial-in attempt at home on her xBloom. The notes worked, but two problems kept nagging:
+          Pin had been logging pour-over brews in Obsidian for the past year — every Ethiopian, every Kenyan, every dial-in attempt at home on her xBloom. The notes worked, but two problems kept nagging:
         </p>
 
         <ul className="mt-4 space-y-3 text-stone-700 list-disc pl-6">
-          <li>Finding the best settings was annoying — every time she opened a new bag, she&apos;d scroll past 20 attempts looking for &ldquo;the one that finally worked.&rdquo; Sometimes she&apos;d just guess.</li>
+          <li>Every time I pick up a bag I&apos;ve already dialed in, I scroll past 20 attempts trying to find the recipe and the notes that got me there.</li>
           <li>Sharing recipes with friends was awkward. Michael (her partner, espresso person) couldn&apos;t use her xBloom dial numbers. A friend on a V60 needed translation. &ldquo;15g, grind 59, 80 RPM&rdquo; was useless to anyone without her exact gear.</li>
         </ul>
 
