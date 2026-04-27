@@ -1,5 +1,6 @@
 'use client'
 
+import Link from 'next/link'
 import { useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
 
@@ -27,7 +28,7 @@ export default function SignInPage() {
   }
 
   return (
-    <main className="min-h-screen flex items-center justify-center bg-stone-100 p-6">
+    <main className="min-h-screen flex flex-col items-center justify-center bg-stone-100 p-6">
       <div className="w-full max-w-sm bg-white rounded-3xl shadow-sm border border-stone-200 p-8">
         <div className="text-xs tracking-widest text-stone-500 uppercase">Pour</div>
         <h1 className="text-2xl font-semibold text-stone-900 mt-1">Sign in</h1>
@@ -63,6 +64,12 @@ export default function SignInPage() {
           </form>
         )}
       </div>
+      <Link
+        href="/welcome"
+        className="mt-6 text-xs text-stone-500 hover:text-stone-800 underline"
+      >
+        New here? Read about Pour →
+      </Link>
     </main>
   )
 }

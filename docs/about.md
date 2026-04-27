@@ -83,7 +83,7 @@ This is a hobby-scale project. Don't expect 24/7 support — but do expect an ac
 
 ## Contact
 
-- **Feedback / questions / "this thing broke"** — eowpitt.pinm@gmail.com
+- **Feedback / questions / "this thing broke"** — [LinkedIn](https://www.linkedin.com/in/pinmanee/)
 - **Code** — [github.com/pinnyeow/coffee](https://github.com/pinnyeow/coffee)
 - **Live app** — [mypour.vercel.app](https://mypour.vercel.app)
 

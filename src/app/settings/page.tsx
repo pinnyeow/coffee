@@ -173,6 +173,13 @@ export default async function SettingsPage() {
                 <div className="text-[11px] text-stone-500 mt-0.5">One-time only.</div>
               </div>
             )}
+            <Link
+              href="/welcome"
+              className="flex items-center justify-between px-4 py-3 text-sm text-stone-800"
+            >
+              <span>About Pour</span>
+              <span className="text-stone-400">›</span>
+            </Link>
             <form action="/sign-out" method="post">
               <button
                 type="submit"
