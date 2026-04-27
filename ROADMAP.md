@@ -104,6 +104,9 @@ Living doc of what's shipped, what's next, and what's on the shelf. Update as de
 **Settings seeding**
 - [ ] Auto-create a default "Espresso 1:2" profile on first sign-in for users who don't have one (so Michael isn't starting blank)
 
+**Marketing**
+- [ ] Restore V60 / Chemex / AeroPress / espresso to `/welcome` hero, metadata description, pills, Step 1 ("Log fast"), and FAQ ("Do I need an xBloom") when form support ships. Currently scoped down to xBloom-only to match shipped reality.
+
 ---
 
 ## 🟢 Backlog (medium-term)

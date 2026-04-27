@@ -4,7 +4,7 @@ import type { Metadata } from 'next'
 export const metadata: Metadata = {
   title: 'Pour — A coffee journal that learns from your friends',
   description:
-    'For home brewers dialing in their xBloom, V60, or espresso. Find the recipe that worked. Share it with friends — even if their gear is different.',
+    'Built for xBloom home brewers. Find the recipe that worked. Share it with friends — even if their gear is different.',
 }
 
 export default function WelcomePage() {
@@ -21,12 +21,12 @@ export default function WelcomePage() {
           A coffee journal that learns from&nbsp;your friends.
         </h1>
         <p className="mt-6 text-lg text-stone-700 max-w-2xl leading-relaxed">
-          For home brewers dialing in their xBloom, V60, or espresso. Find the recipe that worked, faster. Share it with friends — even if their gear is different from yours.
+          Built for xBloom home brewers dialing in pour-over. Find the recipe that worked, faster. Share it with friends — even if their gear is different from yours.
         </p>
 
         <div className="mt-8 flex flex-wrap gap-2">
           <Pill className="bg-stone-200 text-stone-800">xBloom-native</Pill>
-          <Pill className="bg-stone-200 text-stone-800">V60 · Chemex · AeroPress</Pill>
+          <Pill className="bg-stone-200 text-stone-800">V60 · Chemex · AeroPress (coming)</Pill>
           <Pill className="bg-stone-200 text-stone-800">Espresso (coming)</Pill>
           <Pill className="bg-amber-200 text-amber-900">Friends-first</Pill>
         </div>
@@ -80,7 +80,7 @@ export default function WelcomePage() {
 
         <div className="mt-8 space-y-6">
           <Step n={1} title="Log fast">
-            Fields adapt to your method (xBloom, V60, Chemex, AeroPress, espresso). 30 seconds, one-handed, mid-brew. Profile defaults pre-fill the constants — you only change what&apos;s different from last time.
+            Optimized for xBloom today (V60, Chemex, AeroPress, espresso coming). 30 seconds, one-handed, mid-brew. Profile defaults pre-fill the constants — you only change what&apos;s different from last time.
           </Step>
           <Step n={2} title="Find the best settings for any bean">
             Pour groups your brews by bean and surfaces the recipe that worked. No more scrolling through a notes app trying to remember &ldquo;what grind did I land on for this Ethiopian?&rdquo;
@@ -219,7 +219,7 @@ export default function WelcomePage() {
 
         <div className="mt-8 space-y-3">
           <Faq q="Do I need an xBloom?">
-            No. Pour started xBloom-native, but the form adapts to V60, Chemex, AeroPress, French press, and cold brew. Espresso support is coming.
+            Today the log form is xBloom-native — built around xBloom dial settings. V60, Chemex, AeroPress, French press, cold brew, and espresso are all on the roadmap. Friends on other gear can still receive your shared recipes (grind auto-translates to Medium / Medium-fine etc.).
           </Faq>
           <Faq q="Will my brews or notes be public?">
             No public feed exists. Brews default to friends-visible — only friends you&apos;ve explicitly added see them. Each brew has a 🔒 Private toggle if you want to keep one to yourself.
