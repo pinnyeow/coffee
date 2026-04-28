@@ -4,7 +4,7 @@ import type { Metadata } from 'next'
 export const metadata: Metadata = {
   title: 'Pour — A coffee journal that gets better with friends',
   description:
-    'Built for xBloom home brewers. Find the recipe that worked. Share it with friends — even if their gear is different.',
+    'Built for pour-over home brewers (espresso coming). Find the recipe that worked. Share it with friends — even if their gear is different.',
 }
 
 export default function WelcomePage() {
@@ -21,7 +21,7 @@ export default function WelcomePage() {
           A coffee journal that gets better with&nbsp;friends.
         </h1>
         <p className="mt-6 text-lg text-stone-700 max-w-2xl leading-relaxed">
-          Built for xBloom home brewers dialing in pour-over. Find the recipe that worked, faster. Share it with friends — even if their gear is different from yours.
+          Built for home brewers dialing in pour-over — espresso coming. Find the recipe that worked, faster. Share it with friends — even if their gear is different from yours.
         </p>
 
         <div className="mt-8 flex flex-wrap gap-2">
