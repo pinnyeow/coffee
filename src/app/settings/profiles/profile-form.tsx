@@ -34,6 +34,7 @@ export default function ProfileForm({
 
   const isEspresso = initial.method === 'Espresso'
   const isPour = POUR_METHODS.includes(initial.method)
+  const isXBloom = initial.method === 'xBloom'
 
   return (
     <form action={formAction} className="px-6 pb-16 space-y-5">
@@ -86,11 +87,15 @@ export default function ProfileForm({
               <input name="ratio" type="number" step="0.5" inputMode="decimal" defaultValue={initial.ratio ?? ''} placeholder="17" className="w-24 text-xl font-semibold bg-transparent border-b border-stone-300" />
             </Field>
             <Field label="Grind" error={state.fieldErrors?.grind}>
-              <input name="grind" type="number" step="0.5" inputMode="decimal" defaultValue={initial.grind ?? ''} placeholder="55" className="w-24 text-xl font-semibold bg-transparent border-b border-stone-300" />
+              <input name="grind" type="number" step="0.5" inputMode="decimal" defaultValue={initial.grind ?? ''} placeholder={isXBloom ? '55' : ''} className="w-24 text-xl font-semibold bg-transparent border-b border-stone-300" />
             </Field>
-            <Field label="RPM" error={state.fieldErrors?.rpm}>
-              <input name="rpm" type="number" inputMode="numeric" defaultValue={initial.rpm ?? ''} placeholder="80" className="w-24 text-xl font-semibold bg-transparent border-b border-stone-300" />
-            </Field>
+            {isXBloom ? (
+              <Field label="RPM" error={state.fieldErrors?.rpm}>
+                <input name="rpm" type="number" inputMode="numeric" defaultValue={initial.rpm ?? ''} placeholder="80" className="w-24 text-xl font-semibold bg-transparent border-b border-stone-300" />
+              </Field>
+            ) : (
+              <input type="hidden" name="rpm" value="" />
+            )}
             <Field label="Temp (°C)" error={state.fieldErrors?.temp_c}>
               <input name="temp_c" type="number" step="0.5" inputMode="decimal" defaultValue={initial.temp_c ?? ''} placeholder="92" className="w-24 text-xl font-semibold bg-transparent border-b border-stone-300" />
             </Field>
