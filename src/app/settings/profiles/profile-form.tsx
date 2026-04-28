@@ -1,6 +1,6 @@
 'use client'
 
-import { useActionState } from 'react'
+import { useActionState, useState } from 'react'
 import Link from 'next/link'
 import { createProfile, updateProfile, type ProfileFormState } from '@/lib/actions/profiles'
 
@@ -31,10 +31,11 @@ export default function ProfileForm({
     : async (prev: ProfileFormState, fd: FormData) => updateProfile(initial.id!, prev, fd)
 
   const [state, formAction, pending] = useActionState(action, {} as ProfileFormState)
+  const [method, setMethod] = useState(initial.method)
 
-  const isEspresso = initial.method === 'Espresso'
-  const isPour = POUR_METHODS.includes(initial.method)
-  const isXBloom = initial.method === 'xBloom'
+  const isEspresso = method === 'Espresso'
+  const isPour = POUR_METHODS.includes(method)
+  const isXBloom = method === 'xBloom'
 
   return (
     <form action={formAction} className="px-6 pb-16 space-y-5">
@@ -57,7 +58,8 @@ export default function ProfileForm({
       <Field label="Method" error={state.fieldErrors?.method}>
         <select
           name="method"
-          defaultValue={initial.method}
+          value={method}
+          onChange={(e) => setMethod(e.target.value)}
           className="w-full bg-white rounded-xl py-3 px-4 border border-stone-300 text-sm"
         >
           <option>xBloom</option>
