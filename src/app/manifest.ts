@@ -4,7 +4,7 @@ export default function manifest(): MetadataRoute.Manifest {
   return {
     name: 'Pour',
     short_name: 'Pour',
-    description: 'A coffee journal that learns from your friends.',
+    description: 'A coffee journal that gets better with friends.',
     start_url: '/',
     display: 'standalone',
     background_color: '#fafaf7',
