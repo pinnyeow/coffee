@@ -65,6 +65,7 @@ export default async function LogBrewPage({
     purchased_at: pick('shop') ?? '',
     dose_g: pick('dose') ?? (starred?.dose_g != null ? String(starred.dose_g) : ''),
     grind_xbloom: pick('grind') ?? (starred?.grind != null ? String(starred.grind) : ''),
+    rpm_xbloom: pick('rpm') ?? (starred?.rpm != null ? String(starred.rpm) : ''),
     water_ml: water,
     water_temp_c: pick('temp') ?? (starred?.temp_c != null ? String(starred.temp_c) : ''),
     time_str: pick('time') ?? '',

@@ -83,6 +83,7 @@ create table if not exists public.brews (
   dose_g numeric(5,2) not null,
   water_ml integer,
   grind_xbloom numeric(5,2),
+  rpm_xbloom integer,
   water_temp_c numeric(4,1),
   time_seconds integer,
   rating smallint not null check (rating between 1 and 5),

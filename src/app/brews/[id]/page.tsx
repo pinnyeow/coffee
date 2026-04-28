@@ -17,7 +17,7 @@ export default async function BrewDetailPage({
   const { data: brew } = await supabase
     .from('brews')
     .select(
-      'id, user_id, dose_g, water_ml, grind_xbloom, water_temp_c, time_seconds, rating, notes, is_best, visibility, created_at, derived_from_brew_id, bean:beans(id, name, slug, roaster, origin), user:users(id, username, display_name)'
+      'id, user_id, dose_g, water_ml, grind_xbloom, rpm_xbloom, water_temp_c, time_seconds, rating, notes, is_best, visibility, created_at, derived_from_brew_id, bean:beans(id, name, slug, roaster, origin), user:users(id, username, display_name)'
     )
     .eq('id', id)
     .maybeSingle()
@@ -148,6 +148,7 @@ export default async function BrewDetailPage({
             dose_g: String(brew.dose_g),
             water_ml: brew.water_ml != null ? String(brew.water_ml) : '',
             grind_xbloom: brew.grind_xbloom != null ? String(brew.grind_xbloom) : '',
+            rpm_xbloom: brew.rpm_xbloom != null ? String(brew.rpm_xbloom) : '',
             water_temp_c: brew.water_temp_c != null ? String(brew.water_temp_c) : '',
             time_str: timeStr,
             rating: brew.rating,
@@ -162,6 +163,7 @@ export default async function BrewDetailPage({
             dose_g: brew.dose_g,
             water_ml: brew.water_ml,
             grind_xbloom: brew.grind_xbloom,
+            rpm_xbloom: brew.rpm_xbloom,
             water_temp_c: brew.water_temp_c,
             time_seconds: brew.time_seconds,
             rating: brew.rating,
@@ -192,6 +194,7 @@ function ReadOnlyBrew({
     dose_g: number
     water_ml: number | null
     grind_xbloom: number | null
+    rpm_xbloom: number | null
     water_temp_c: number | null
     time_seconds: number | null
     rating: number
@@ -219,6 +222,7 @@ function ReadOnlyBrew({
   params.set('dose', String(brew.dose_g))
   if (brew.water_ml != null) params.set('water', String(brew.water_ml))
   if (brew.grind_xbloom != null) params.set('grind', String(brew.grind_xbloom))
+  if (brew.rpm_xbloom != null) params.set('rpm', String(brew.rpm_xbloom))
   if (brew.water_temp_c != null) params.set('temp', String(brew.water_temp_c))
   if (m != null && s != null) params.set('time', `${m}:${s.toString().padStart(2, '0')}`)
   params.set('from', brewId)
@@ -234,6 +238,7 @@ function ReadOnlyBrew({
           {ratio && <Stat label="RATIO" value={`1:${ratio}`} />}
           {brew.water_temp_c != null && <Stat label="TEMP" value={`${brew.water_temp_c}°C`} />}
           {brew.grind_xbloom != null && <Stat label="GRIND" value={String(brew.grind_xbloom)} />}
+          {brew.rpm_xbloom != null && <Stat label="RPM" value={String(brew.rpm_xbloom)} />}
           {brew.time_seconds != null && (
             <Stat label="TIME" value={`${m}:${s!.toString().padStart(2, '0')}`} />
           )}

@@ -14,6 +14,7 @@ export type LogBrewDefaults = {
   purchased_at: string
   dose_g: string
   grind_xbloom: string
+  rpm_xbloom: string
   water_ml: string
   water_temp_c: string
   time_str: string
@@ -47,6 +48,7 @@ export default function LogBrewForm({
 
   const [dose, setDose] = useState(defaults.dose_g)
   const [grind, setGrind] = useState(defaults.grind_xbloom)
+  const [rpm, setRpm] = useState(defaults.rpm_xbloom)
   const [water, setWater] = useState(defaults.water_ml)
   const [temp, setTemp] = useState(defaults.water_temp_c)
   const [profileId, setProfileId] = useState(defaults.profile_id)
@@ -64,6 +66,7 @@ export default function LogBrewForm({
     if (!p) return
     if (p.dose_g != null) setDose(String(p.dose_g))
     if (p.grind != null) setGrind(String(p.grind))
+    if (p.rpm != null) setRpm(String(p.rpm))
     if (p.temp_c != null) setTemp(String(p.temp_c))
     if (p.dose_g != null && p.ratio != null) {
       setWater(String(Math.round(p.dose_g * p.ratio)))
@@ -226,6 +229,19 @@ export default function LogBrewForm({
               className="w-24 text-2xl font-semibold bg-transparent border-b border-stone-300 focus:outline-none"
             />
           </Field>
+          {isXBloom && (
+            <Field label="RPM" error={state.fieldErrors?.rpm_xbloom}>
+              <input
+                name="rpm_xbloom"
+                type="number"
+                value={rpm}
+                onChange={(e) => setRpm(e.target.value)}
+                placeholder="80"
+                inputMode="numeric"
+                className="w-24 text-2xl font-semibold bg-transparent border-b border-stone-300 focus:outline-none"
+              />
+            </Field>
+          )}
           <Field label="Time">
             <input
               name="time_str"

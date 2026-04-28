@@ -8,6 +8,7 @@ type Defaults = {
   dose_g: string
   water_ml: string
   grind_xbloom: string
+  rpm_xbloom: string
   water_temp_c: string
   time_str: string
   rating: number
@@ -92,6 +93,16 @@ export default function EditBrewForm({
               defaultValue={defaults.water_temp_c}
               placeholder="92"
               inputMode="decimal"
+              className="w-24 text-2xl font-semibold bg-transparent border-b border-stone-300 focus:outline-none"
+            />
+          </Field>
+          <Field label="RPM" error={state.fieldErrors?.rpm_xbloom}>
+            <input
+              name="rpm_xbloom"
+              type="number"
+              defaultValue={defaults.rpm_xbloom}
+              placeholder="80"
+              inputMode="numeric"
               className="w-24 text-2xl font-semibold bg-transparent border-b border-stone-300 focus:outline-none"
             />
           </Field>
