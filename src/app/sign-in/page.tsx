@@ -60,7 +60,7 @@ export default function SignInPage() {
         {step === 'email' ? (
           <>
             <p className="text-sm text-stone-600 mt-1">
-              We&apos;ll email you a 6-digit code — no password needed.
+              We&apos;ll email you a sign-in code — no password needed.
             </p>
             <form onSubmit={sendCode} className="mt-6 space-y-3">
               <input
@@ -87,16 +87,16 @@ export default function SignInPage() {
         ) : (
           <>
             <p className="text-sm text-stone-600 mt-1">
-              We sent a 6-digit code to <b>{email}</b>. Enter it below.
+              We sent a sign-in code to <b>{email}</b>. Enter it below.
             </p>
             <form onSubmit={verifyCode} className="mt-6 space-y-3">
               <input
                 type="text"
                 inputMode="numeric"
                 pattern="[0-9]*"
-                maxLength={6}
+                maxLength={10}
                 required
-                placeholder="123456"
+                placeholder="••••••"
                 value={code}
                 onChange={(e) => setCode(e.target.value.replace(/\D/g, ''))}
                 className="w-full bg-white rounded-xl py-3 px-4 border border-stone-300 text-lg tracking-[0.4em] text-center focus:outline-none focus:border-stone-500"
@@ -104,7 +104,7 @@ export default function SignInPage() {
               />
               <button
                 type="submit"
-                disabled={status === 'verifying' || code.length !== 6}
+                disabled={status === 'verifying' || code.length < 6}
                 className="w-full bg-stone-900 text-white rounded-xl py-3 text-sm font-medium disabled:opacity-50"
               >
                 {status === 'verifying' ? 'Verifying…' : 'Sign in'}
