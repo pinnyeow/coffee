@@ -67,8 +67,6 @@ export default function ProfileForm({
           <option>Chemex</option>
           <option>AeroPress</option>
           <option value="Espresso">Espresso (logging coming soon)</option>
-          <option>French press</option>
-          <option>Cold brew</option>
         </select>
       </Field>
 
