@@ -63,11 +63,17 @@ export default function ProfileForm({
           <option>V60</option>
           <option>Chemex</option>
           <option>AeroPress</option>
-          <option>Espresso</option>
+          <option value="Espresso">Espresso (logging coming soon)</option>
           <option>French press</option>
           <option>Cold brew</option>
         </select>
       </Field>
+
+      {isEspresso && (
+        <div className="rounded-xl bg-amber-50 border border-amber-200 p-3 text-xs text-amber-900">
+          <b>Heads up:</b> espresso brew logging is on the roadmap but not built yet. You can save this profile for later — fields will appear on the brew form once we ship it.
+        </div>
+      )}
 
       {isPour && (
         <div className="bg-white rounded-2xl p-4 border border-stone-200">

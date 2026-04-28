@@ -18,16 +18,20 @@ export default async function LogBrewPage({
     return Array.isArray(v) ? v[0] : v
   }
 
-  const { data: profilesData } = await supabase
+  const { data: allProfilesData } = await supabase
     .from('profiles')
     .select('id, name, method, dose_g, grind, ratio, rpm, temp_c, is_default')
     .eq('user_id', user.id)
-    .in('method', ['xBloom', 'V60', 'Chemex', 'AeroPress'])
     .order('is_default', { ascending: false })
     .order('name')
 
-  const profiles = (profilesData ?? []) as ProfileOption[]
+  const allProfiles = (allProfilesData ?? []) as ProfileOption[]
+  const profiles = allProfiles.filter((p) =>
+    ['xBloom', 'V60', 'Chemex', 'AeroPress'].includes(p.method)
+  )
   const starred = profiles.find((p) => p.is_default)
+  const hasOnlyEspressoProfiles =
+    allProfiles.length > 0 && profiles.length === 0
 
   const prefillFromUrl = Boolean(pick('bean') || pick('dose') || pick('grind'))
 
@@ -59,7 +63,7 @@ export default async function LogBrewPage({
     purchased_country: pick('country') ?? '',
     purchased_city: pick('city') ?? '',
     purchased_at: pick('shop') ?? '',
-    dose_g: pick('dose') ?? (starred?.dose_g != null ? String(starred.dose_g) : '15'),
+    dose_g: pick('dose') ?? (starred?.dose_g != null ? String(starred.dose_g) : ''),
     grind_xbloom: pick('grind') ?? (starred?.grind != null ? String(starred.grind) : ''),
     water_ml: water,
     water_temp_c: pick('temp') ?? (starred?.temp_c != null ? String(starred.temp_c) : ''),
@@ -74,6 +78,8 @@ export default async function LogBrewPage({
     ? `Prefilled from best brew of ${defaults.bean || 'this bean'}. Tweak any field before saving.`
     : starred
     ? `Prefilled from your profile: ${starred.name}. Change profile or tweak fields below.`
+    : hasOnlyEspressoProfiles
+    ? "Espresso brew logging is coming soon ☕ For now, you can log pour-over brews here — add a pour-over profile in Settings to auto-fill."
     : profiles.length === 0
     ? 'No profile set. Create one in Settings to auto-fill future brews.'
     : ''

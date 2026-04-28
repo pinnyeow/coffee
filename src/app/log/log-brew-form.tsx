@@ -51,6 +51,12 @@ export default function LogBrewForm({
   const [temp, setTemp] = useState(defaults.water_temp_c)
   const [profileId, setProfileId] = useState(defaults.profile_id)
 
+  const selectedProfile = profiles.find((p) => p.id === profileId)
+  const sectionLabel = selectedProfile?.method
+    ? `${selectedProfile.method} settings`
+    : 'Brew settings'
+  const isXBloom = selectedProfile?.method === 'xBloom'
+
   function applyProfile(id: string) {
     setProfileId(id)
     if (!id) return
@@ -172,7 +178,7 @@ export default function LogBrewForm({
       </details>
 
       <div className="bg-white rounded-2xl p-4 border border-stone-200">
-        <div className="text-xs text-stone-500 mb-3">xBloom settings</div>
+        <div className="text-xs text-stone-500 mb-3">{sectionLabel}</div>
         <div className="grid grid-cols-2 gap-4">
           <Field label="Dose (g)" error={state.fieldErrors?.dose_g}>
             <input
@@ -192,7 +198,7 @@ export default function LogBrewForm({
               step="0.5"
               value={grind}
               onChange={(e) => setGrind(e.target.value)}
-              placeholder="55"
+              placeholder={isXBloom ? '55' : ''}
               inputMode="decimal"
               className="w-24 text-2xl font-semibold bg-transparent border-b border-stone-300 focus:outline-none"
             />
