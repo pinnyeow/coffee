@@ -155,7 +155,7 @@ The hardest problem for a friends-first app: a brand-new user lands and the app 
 Doubles as the landing page when unauthenticated users hit `mypour.app/`.
 
 **Above the fold**
-- One-line description: *"A coffee journal that learns from your friends."*
+- One-line description: *"A coffee journal that gets better with friends."*
 - Three category chips: `xBloom-native` · `Espresso` · `Friend recipes`
 - Primary CTA: **Get started** → sign-in. If landing via invite link, replace with "Pin invited you to Pour."
 

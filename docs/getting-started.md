@@ -1,6 +1,6 @@
 # Getting Started with Pour
 
-*A coffee journal that learns from your friends.*
+*A coffee journal that gets better with friends.*
 
 ---
 

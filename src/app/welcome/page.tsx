@@ -2,7 +2,7 @@ import Link from 'next/link'
 import type { Metadata } from 'next'
 
 export const metadata: Metadata = {
-  title: 'Pour — A coffee journal that learns from your friends',
+  title: 'Pour — A coffee journal that gets better with friends',
   description:
     'Built for xBloom home brewers. Find the recipe that worked. Share it with friends — even if their gear is different.',
 }
@@ -18,7 +18,7 @@ export default function WelcomePage() {
       {/* Hero */}
       <section className="px-6 pt-6 pb-14 max-w-3xl mx-auto">
         <h1 className="text-5xl md:text-6xl font-semibold leading-[1.05] text-stone-900">
-          A coffee journal that learns from&nbsp;your friends.
+          A coffee journal that gets better with&nbsp;friends.
         </h1>
         <p className="mt-6 text-lg text-stone-700 max-w-2xl leading-relaxed">
           Built for xBloom home brewers dialing in pour-over. Find the recipe that worked, faster. Share it with friends — even if their gear is different from yours.
