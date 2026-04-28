@@ -86,10 +86,13 @@ export default function SignInPage() {
           </>
         ) : (
           <>
-            <p className="text-sm text-stone-600 mt-1">
-              We sent a sign-in code to <b>{email}</b>. Enter it below.
+            <div className="mt-4 rounded-xl bg-green-50 border border-green-200 p-4 text-sm text-green-800">
+              ✓ Code sent to <b>{email}</b>
+            </div>
+            <p className="text-sm text-stone-600 mt-4">
+              Check your inbox (and junk folder, just in case) and enter the code below.
             </p>
-            <form onSubmit={verifyCode} className="mt-6 space-y-3">
+            <form onSubmit={verifyCode} className="mt-4 space-y-3">
               <input
                 type="text"
                 inputMode="numeric"
