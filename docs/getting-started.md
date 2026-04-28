@@ -22,9 +22,9 @@ If you've been keeping coffee notes in Obsidian, Apple Notes, or a notebook — 
 
 ### Step 1 — Sign in (10 seconds)
 
-Open `mypour.vercel.app/sign-in`. Type your email. Click **Send magic link**.
+Open `mypour.vercel.app/sign-in`. Type your email. Click **Send code**.
 
-A one-time link arrives in your inbox. Click it once. You're in. No password to remember.
+A 6-digit code lands in your inbox (check junk if you don't see it). Type it in to sign in. No password to remember.
 
 ### Step 2 — Set a profile (1 minute, optional but recommended)
 
@@ -96,7 +96,7 @@ Tap the **Share** button on any brew. Two modes:
 Copy as text, paste in WhatsApp / iMessage. Friend doesn't need an account.
 
 **What if I forget my password?**
-There isn't one. Sign-in is magic-link only — every time you sign in, you get a fresh one-time link by email.
+There isn't one. Each sign-in is a fresh 6-digit code emailed to you — type it in to get back in.
 
 **What if I want my data?**
 Pour runs on Postgres (via Supabase). Export is simple — your data is yours. Reach out and we'll add a "Download my data" button when there's demand.

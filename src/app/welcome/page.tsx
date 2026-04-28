@@ -25,8 +25,7 @@ export default function WelcomePage() {
         </p>
 
         <div className="mt-8 flex flex-wrap gap-2">
-          <Pill className="bg-stone-200 text-stone-800">xBloom-native</Pill>
-          <Pill className="bg-stone-200 text-stone-800">V60 · Chemex · AeroPress (coming)</Pill>
+          <Pill className="bg-stone-200 text-stone-800">xBloom · V60 · Chemex · AeroPress</Pill>
           <Pill className="bg-stone-200 text-stone-800">Espresso (coming)</Pill>
           <Pill className="bg-amber-200 text-amber-900">Friends-first</Pill>
         </div>
@@ -80,7 +79,7 @@ export default function WelcomePage() {
 
         <div className="mt-8 space-y-6">
           <Step n={1} title="Log fast">
-            Optimized for xBloom today (V60, Chemex, AeroPress, espresso coming). 30 seconds, one-handed, mid-brew. Profile defaults pre-fill the constants — you only change what&apos;s different from last time.
+            Supports xBloom, V60, Chemex, and AeroPress today (espresso coming). 30 seconds, one-handed, mid-brew. Profile defaults pre-fill the constants — you only change what&apos;s different from last time.
           </Step>
           <Step n={2} title="Find the best settings for any bean">
             Pour groups your brews by bean and surfaces the recipe that worked. No more scrolling through a notes app trying to remember &ldquo;what grind did I land on for this Ethiopian?&rdquo;
@@ -97,9 +96,9 @@ export default function WelcomePage() {
         <H2>From sign-in to first dialed brew</H2>
 
         <ol className="mt-8 space-y-7">
-          <Phase label="Step 1 · 10 seconds" title="Sign in with magic link">
+          <Phase label="Step 1 · 10 seconds" title="Sign in with a 6-digit code">
             <p>
-              Type your email on the <Link href="/sign-in" className="underline">sign-in page</Link>. A one-time link arrives in your inbox. Click it once. You&apos;re in. No password to remember.
+              Type your email on the <Link href="/sign-in" className="underline">sign-in page</Link> and tap <b>Send code</b>. A 6-digit code lands in your inbox (check junk if you don&apos;t see it). Type it in to sign in. No password to remember.
             </p>
           </Phase>
           <Phase label="Step 2 · 1 minute (recommended)" title="Set a profile">
@@ -219,7 +218,7 @@ export default function WelcomePage() {
 
         <div className="mt-8 space-y-3">
           <Faq q="Do I need an xBloom?">
-            Today the log form is xBloom-native — built around xBloom dial settings. V60, Chemex, AeroPress, French press, cold brew, and espresso are all on the roadmap. Friends on other gear can still receive your shared recipes (grind auto-translates to Medium / Medium-fine etc.).
+            No — Pour now supports xBloom, V60, Chemex, and AeroPress. French press, cold brew, and espresso are still on the roadmap. Friends on other gear can still receive your shared recipes (grind auto-translates to Medium / Medium-fine etc.).
           </Faq>
           <Faq q="Will my brews or notes be public?">
             No public feed exists. Brews default to friends-visible — only friends you&apos;ve explicitly added see them. Each brew has a 🔒 Private toggle if you want to keep one to yourself.
@@ -228,7 +227,7 @@ export default function WelcomePage() {
             Tap Share on any brew. <b>Universal mode</b> outputs <Code>15g · 255ml · 1:17 · 92°C · Medium grind · 3:14</Code> — works anywhere. <b>xBloom mode</b> gives exact dial numbers for other xBloom users. Copy as text, paste in iMessage / WhatsApp.
           </Faq>
           <Faq q="What if I forget my password?">
-            There isn&apos;t one. Sign-in is magic-link only — every time you sign in, you get a fresh one-time link by email.
+            There isn&apos;t one. Each sign-in is a fresh 6-digit code emailed to you — type it in to get back in.
           </Faq>
           <Faq q="Is it free?">
             Yes, for now. Pour is in early access — Pin and a small group of friends. No credit card.
@@ -241,7 +240,7 @@ export default function WelcomePage() {
         <div className="bg-stone-900 text-white rounded-3xl p-10 text-center">
           <h2 className="text-3xl font-semibold leading-tight">Ready to log your next brew?</h2>
           <p className="text-stone-300 mt-3 max-w-md mx-auto">
-            No download. Magic-link sign-in. Free during early access.
+            No download. 6-digit code sign-in.
           </p>
           <Link
             href="/sign-in"

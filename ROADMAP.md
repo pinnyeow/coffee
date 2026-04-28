@@ -9,7 +9,7 @@ Living doc of what's shipped, what's next, and what's on the shelf. Update as de
 ## ✅ Shipped
 
 ### v1 — Walking skeleton
-- Magic-link sign in (Supabase Auth)
+- 6-digit OTP code sign in (Supabase Auth)
 - Log a brew (form + Zod-validated server action)
 - Home screen showing your brews
 
