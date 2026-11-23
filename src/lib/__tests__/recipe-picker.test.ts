@@ -104,3 +104,38 @@ describe('avgRating', () => {
     expect(avgRating([brew({ rating: 5 }), brew({ rating: 3 })])).toBe(4)
   })
 })
+
+describe('user ratings vs placeholder ratings', () => {
+  it('a single brew the user rated counts as a user rating', () => {
+    const r = pickRecipe([brew({ id: 'new', rating: 4 })])!
+    expect(r.hasUserRating).toBe(true)
+    expect(r.hasRatingVariance).toBe(false)
+  })
+
+  it('same-rated user brews still count as a user rating', () => {
+    const r = pickRecipe([brew({ id: 'a', rating: 4 }), brew({ id: 'b', rating: 4 })])!
+    expect(r.hasUserRating).toBe(true)
+  })
+
+  it('imported placeholder ratings do not count', () => {
+    const r = pickRecipe([
+      brew({ id: 'a', rating_is_default: true }),
+      brew({ id: 'b', rating_is_default: true }),
+    ])!
+    expect(r.hasUserRating).toBe(false)
+  })
+
+  it('averages only the ratings the user chose', () => {
+    expect(
+      avgRating([
+        brew({ rating: 3, rating_is_default: true }),
+        brew({ rating: 3, rating_is_default: true }),
+        brew({ rating: 5 }),
+      ])
+    ).toBe(5)
+  })
+
+  it('falls back to all ratings when none were chosen', () => {
+    expect(avgRating([brew({ rating: 3, rating_is_default: true })])).toBe(3)
+  })
+})

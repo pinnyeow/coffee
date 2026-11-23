@@ -4,7 +4,7 @@ import { createClient } from '@/lib/supabase/server'
 import {
   pickRecipe,
   avgRating,
-  brewsHaveRatingVariance,
+  brewsHaveUserRating,
   formatRelative,
   type BrewForPicker,
 } from '@/lib/recipe-picker'
@@ -80,7 +80,7 @@ export default async function BeanDetailPage({
   const { data: myBrewsData } = await supabase
     .from('brews')
     .select(
-      'id, dose_g, water_ml, grind_xbloom, water_temp_c, time_seconds, rating, notes, is_best, visibility, created_at'
+      'id, dose_g, water_ml, grind_xbloom, water_temp_c, time_seconds, rating, rating_is_default, notes, is_best, visibility, created_at'
     )
     .eq('bean_id', bean.id)
     .eq('user_id', user.id)
@@ -89,7 +89,7 @@ export default async function BeanDetailPage({
   type MyBrewRow = BrewRow & { visibility: string }
   const brews = (myBrewsData ?? []) as MyBrewRow[]
   const recipe = pickRecipe(brews)
-  const hasVariance = brewsHaveRatingVariance(brews)
+  const hasUserRating = brewsHaveUserRating(brews)
   const avg = avgRating(brews)
 
   // Friend's brews for this bean (RLS gates the rest)
@@ -185,7 +185,7 @@ export default async function BeanDetailPage({
         )}
         <div className="text-sm text-stone-500 mt-1">
           {brews.length} brew{brews.length === 1 ? '' : 's'}
-          {hasVariance && (
+          {hasUserRating && (
             <>
               {' · '}
               <span className="text-amber-500">{formatStars(avg)}</span> avg
@@ -342,7 +342,7 @@ export default async function BeanDetailPage({
                   {b.visibility === 'self' && <span title="Private">🔒</span>}
                   {formatRelative(b.created_at)}
                 </div>
-                {hasVariance && (
+                {!b.rating_is_default && (
                   <div className="text-sm text-amber-500">{formatStars(b.rating)}</div>
                 )}
               </div>

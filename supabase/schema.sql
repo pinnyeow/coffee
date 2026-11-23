@@ -87,6 +87,7 @@ create table if not exists public.brews (
   water_temp_c numeric(4,1),
   time_seconds integer,
   rating smallint not null check (rating between 1 and 5),
+  rating_is_default boolean not null default false,
   notes text,
   is_best boolean not null default false,
   visibility text not null default 'self' check (visibility in ('self','friends')),

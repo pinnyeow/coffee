@@ -74,6 +74,7 @@ export async function importObsidianJournal(fileText: string): Promise<ImportRes
       water_temp_c: null,
       time_seconds: b.time_seconds,
       rating: 3, // default for imported historical brews, user can edit
+      rating_is_default: true,
       notes: b.notes,
     }))
     if (rows.length > 0) {

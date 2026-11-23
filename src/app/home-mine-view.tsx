@@ -13,6 +13,7 @@ export type BeanCardData = {
   avgRating: number
   hasExplicitStar: boolean
   hasRatingVariance: boolean
+  hasUserRating: boolean
   recipeLabel: 'Best' | 'Latest'
   recipe: {
     dose_g: number
@@ -177,7 +178,7 @@ export default function HomeMineView({
           </div>
           <div className="space-y-3">
             {visibleCards.map((card) => {
-              const showStars = card.hasRatingVariance || card.hasExplicitStar
+              const showStars = card.hasUserRating || card.hasExplicitStar
               const r = card.recipe
               const ratio =
                 r.water_ml != null && r.dose_g > 0 ? (r.water_ml / r.dose_g).toFixed(1) : null

@@ -58,7 +58,7 @@ export default async function HomePage({
   let brewsQuery = supabase
     .from('brews')
     .select(
-      'id, dose_g, water_ml, grind_xbloom, water_temp_c, time_seconds, rating, notes, is_best, created_at, bean:beans(id, name, slug, roaster, origin), user:users(id, username, display_name)'
+      'id, dose_g, water_ml, grind_xbloom, water_temp_c, time_seconds, rating, rating_is_default, notes, is_best, created_at, bean:beans(id, name, slug, roaster, origin), user:users(id, username, display_name)'
     )
     .order('created_at', { ascending: false })
 
@@ -139,6 +139,7 @@ export default async function HomePage({
           water_temp_c: recipe.brew.water_temp_c,
           time_seconds: recipe.brew.time_seconds,
           rating: recipe.brew.rating,
+          rating_is_default: recipe.brew.rating_is_default ?? false,
           created_at: recipe.brew.created_at,
         },
         latestBrewAt,
@@ -185,6 +186,7 @@ export default async function HomePage({
         water_temp_c: b.water_temp_c,
         time_seconds: b.time_seconds,
         rating: b.rating,
+        rating_is_default: b.rating_is_default,
         notes: b.notes,
         is_best: b.is_best,
         created_at: b.created_at,
@@ -206,6 +208,7 @@ export default async function HomePage({
           avgRating: avgRating(brews),
           hasExplicitStar: recipe.hasExplicitStar,
           hasRatingVariance: recipe.hasRatingVariance,
+          hasUserRating: recipe.hasUserRating,
           recipeLabel: recipe.label,
           isBookmarked: bookmarkedIds.has(bean.id),
           recipe: {
