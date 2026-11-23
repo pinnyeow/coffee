@@ -183,7 +183,7 @@ function UsernameRow({ current }: { current: string | null }) {
       )}
       {error && <div className="text-xs text-red-600 mt-2">{error}</div>}
       <div className="text-[11px] text-stone-500 mt-2">
-        Friends add you with this. Share it with Michael so he can find you.
+        Friends add you with this. Share it with a friend so they can find you.
       </div>
     </div>
   )

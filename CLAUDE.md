@@ -9,7 +9,7 @@ auto-translate xBloom-specific settings into a universal recipe other gear can u
 
 ## Who It's For
 - **Pin** (PM, primary user) — xBloom, pour over
-- **Michael** (Pin's partner) — espresso + cortado
+- **Pin's partner** — espresso + cortado
 - **Friends** — invited later, private feed only (no public community)
 
 ## How It's Built
@@ -24,7 +24,7 @@ auto-translate xBloom-specific settings into a universal recipe other gear can u
 ## What We're Working On
 Currently: shipped v4 (friends + share + want-to-try). Next, in order:
 1. **Polish pass** — desktop framing, PWA basics, loading + empty states, typography
-2. **v5 Espresso & cross-method** — adds brew_method + espresso fields so Michael
+2. **v5 Espresso & cross-method** — adds brew_method + espresso fields so Pin's partner
    can log cortados, plus bean detail grouped by method
 
 See `ROADMAP.md` for the live tracker; `plan.md` is the locked design spec.

@@ -15,7 +15,7 @@ Pin records xBloom-specific values (grind dial 59, RPM 80). A friend on V60 can'
 ## Users
 
 - **Pin** — primary, PM, xBloom user, pour over
-- **Michael** — Pin's bf, espresso + cortado
+- **Pin's partner** — espresso + cortado
 - **Friends** — invited later, private feed (no public community)
 
 ## Locked decisions
@@ -26,7 +26,7 @@ Pin records xBloom-specific values (grind dial 59, RPM 80). A friend on V60 can'
 | Community | Level 2 — friends + private feed |
 | Database | Supabase (Postgres + auth + realtime, free tier) |
 | Primary method | Pour over (xBloom is default) |
-| Secondary | Espresso + cortado (for Michael) |
+| Secondary | Espresso + cortado (for Pin's partner) |
 | Rating | 1–5 stars, required |
 | Notes | Optional — rate-and-save is fine |
 | Defaults | Configurable in Settings, auto-filled on every new brew |
@@ -49,7 +49,7 @@ Instead of a single flat "default", users have **multiple named profiles** — o
 - `Dark roast / 3-pour` — 16g · 1:15 · 94°C · grind 52 · 80 RPM · bloom 32 + 80·80·50
 - `Geisha delicate` — 13g · 1:17 · 90°C · grind 58 · 70 RPM
 
-**Example espresso profiles (Michael)**
+**Example espresso profiles (Pin's partner)**
 - `Cortado 1:2` ★ default — 18g in · 36g out · 28s · 93°C · + 60ml milk
 - `Long espresso 1:3` — 18g in · 54g out · 32s · 93°C
 
@@ -79,7 +79,7 @@ Instead of a single flat "default", users have **multiple named profiles** — o
 - Form adapts to method (xBloom shows RPM + pour schedule, espresso shows yield instead of water, etc.)
 - For espresso: **drink style** selector (Espresso / Cortado / Latte / Flat white / Cappuccino / Americano / Macchiato)
 - Bean autocomplete — preview shows settings from best brew for that bean
-- Autofill hint banner: "Prefilled from your best brew of X" / "From your Light roast profile" / "From Michael's best brew"
+- Autofill hint banner: "Prefilled from your best brew of X" / "From your Light roast profile" / "From a friend's best brew"
 - **Live-linked Dose / Water / Ratio** — change one, the others recompute (e.g., 15g + 1:17 → 255ml auto-fills)
 - Estimated output shown read-only: `~225ml in cup` (water minus grounds retention)
 - **Pour schedule** (xBloom, collapsed by default): Bloom + pours with volumes; sum auto-validates against total water
@@ -92,7 +92,7 @@ Instead of a single flat "default", users have **multiple named profiles** — o
 - **Bought in** — country + city + shop (e.g., "Spain · Barcelona · Obadiah Acid Cafe")
 - **Recommended recipe card** at top — leads with universal settings (ratio, temp, time, grind description), xBloom-specific below
 - "Use these settings" → pre-fills Log brew (including pour schedule)
-- Toggle: **Your brews · Michael's brews · Friends' brews**
+- Toggle: **Your brews · Friends' best brews · Friends' brews**
 - Best brew pinned with ★
 - All brews, newest first
 
@@ -198,12 +198,12 @@ Fields can be null when they don't apply to the method (e.g., `rpm` for V60, `wa
 |---|---|---|
 | Time to log a brew | < 30s | Stopwatch on first 10 logs |
 | Time to find best settings for known bean | < 10s | Stopwatch from Home → Use these settings |
-| Shared recipes brewed by friend | qualitative | Ask Michael weekly |
+| Shared recipes brewed by friend | qualitative | Ask testers weekly |
 | Weekly logs after 2 weeks | > 5/week per user | Count in DB |
 | App error rate | 0 | Supabase logs + browser console |
 
 **C. Weekly dogfood review**
-- You + Michael use Pour for a week, we run a retro: what broke, what felt slow, what's missing
+- You + your partner use Pour for a week, we run a retro: what broke, what felt slow, what's missing
 - Log issues in GitHub, fix highest-impact first
 
 ### Pre-launch checklist (before Phase 2 deploy)
@@ -220,7 +220,7 @@ Fields can be null when they don't apply to the method (e.g., `rpm` for V60, `wa
 ### Phase 1 — Local dev (now)
 - [ ] Next.js scaffolded (done)
 - [ ] Supabase project created (free tier), local dev uses hosted DB directly
-- [ ] Auth: magic link — Pin + Michael sign in with email
+- [ ] Auth: magic link — Pin + her partner sign in with email
 - [ ] Schema created via Supabase SQL editor
 - [ ] One-time Obsidian import flow on first run (parse `.md`, preview, confirm, create beans + brews + "My usual" profile)
 - [ ] Settings screen with multiple profiles per method (starred default)
@@ -231,7 +231,7 @@ Fields can be null when they don't apply to the method (e.g., `rpm` for V60, `wa
 - [ ] Friends: add by username, see their brews
 - [ ] Share: copy as text
 
-**Verification**: Pin logs 3 brews, Michael logs 1 cortado, each sees the other's brews. Bean detail shows recommended settings.
+**Verification**: Pin logs 3 brews, her partner logs 1 cortado, each sees the other's brews. Bean detail shows recommended settings.
 
 ### Phase 2 — Public polish
 - [ ] Deploy to Vercel

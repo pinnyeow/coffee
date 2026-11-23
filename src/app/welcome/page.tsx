@@ -145,7 +145,7 @@ export default function WelcomePage() {
             Most coffee apps are roaster catalogs or one-size-fits-all loggers. Pour is built for people who <b>dial in</b> — multiple attempts on the same bean, tracking what changed, surfacing the keeper. The unit of the app is a bean, not a transaction.
           </Difference>
           <Difference title="vs. just texting recipes to friends">
-            When you send Michael &ldquo;15g, grind 59, 80 RPM, 225ml&rdquo; he has no idea what to do unless he also has an xBloom. Pour translates <b>the same recipe</b>{' '}into &ldquo;Medium grind, 92°C, 1:15 ratio, 3:14 brew time&rdquo; — universal across pour-over gear.
+            When you send a friend &ldquo;15g, grind 59, 80 RPM, 225ml&rdquo; they have no idea what to do unless they also have an xBloom. Pour translates <b>the same recipe</b>{' '}into &ldquo;Medium grind, 92°C, 1:15 ratio, 3:14 brew time&rdquo; — universal across pour-over gear.
           </Difference>
         </div>
 
@@ -180,7 +180,7 @@ export default function WelcomePage() {
 
         <ul className="mt-4 space-y-3 text-stone-700 list-disc pl-6">
           <li>Every time Pin picks up a bag she&apos;s already dialed in, Pin scrolls past 20 attempts trying to find the recipe and the notes that got her there.</li>
-          <li>Sharing recipes with friends was awkward. Michael (her partner, espresso person) couldn&apos;t use her xBloom dial numbers. A friend on a V60 needed translation. &ldquo;15g, grind 59, 80 RPM&rdquo; was useless to anyone without her exact gear.</li>
+          <li>Sharing recipes with friends was awkward. Her partner (an espresso person) couldn&apos;t use her xBloom dial numbers. A friend on a V60 needed translation. &ldquo;15g, grind 59, 80 RPM&rdquo; was useless to anyone without her exact gear.</li>
         </ul>
 
         <p className="text-stone-700 mt-6 leading-relaxed">

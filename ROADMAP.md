@@ -99,10 +99,10 @@ Living doc of what's shipped, what's next, and what's on the shelf. Update as de
 
 **Universal translation polish**
 - [ ] Existing: xBloom grind dial → "Medium" descriptor (done)
-- [ ] Add: espresso grind translation ("≈ 5–6 on most home grinders") so Pin's xBloom-7 shares meaningfully to Michael
+- [ ] Add: espresso grind translation ("≈ 5–6 on most home grinders") so Pin's xBloom-7 shares meaningfully to espresso friends
 
 **Settings seeding**
-- [ ] Auto-create a default "Espresso 1:2" profile on first sign-in for users who don't have one (so Michael isn't starting blank)
+- [ ] Auto-create a default "Espresso 1:2" profile on first sign-in for users who don't have one (so espresso users aren't starting blank)
 
 **Marketing**
 - [ ] Restore V60 / Chemex / AeroPress / espresso to `/welcome` hero, metadata description, pills, Step 1 ("Log fast"), and FAQ ("Do I need an xBloom") when form support ships. Currently scoped down to xBloom-only to match shipped reality.
@@ -143,11 +143,11 @@ The hardest problem for a friends-first app: a brand-new user lands and the app 
 **Bundles with the Getting Started page below — both are first-time-experience work.**
 
 - [ ] **Personalized invite links** — `mypour.app/i/<invite-token>` → landing page says "Pin invited you to Pour"
-- [ ] **Auto-friend on invite acceptance** — Michael clicks Pin's link, signs up, lands signed in AND already friends with Pin (skips the username-search step)
+- [ ] **Auto-friend on invite acceptance** — A friend clicks Pin's link, signs up, lands signed in AND already friends with Pin (skips the username-search step)
 - [ ] **Public preview before sign-up** — if invitee clicks link, show a teaser of Pin's most recent brew or starred recipe BEFORE asking them to sign in. Lowers friction.
-- [ ] **Suggested friends** — friends-of-friends on signup. If Pin and Michael are friends, and Michael invites Sarah, suggest Pin to Sarah on first run.
+- [ ] **Suggested friends** — friends-of-friends on signup. If Pin and a friend are connected, and that friend invites someone new, suggest Pin to the new person on first run.
 - [ ] **Find friends by email** — paste a list of emails; show which ones are already on Pour
-- [ ] **Onboarding flow that highlights friend's data** — after Michael signs up via Pin's invite, first-run screen shows "Here's what Pin has been brewing" with her best 3 recipes. Instant value, even before he logs anything.
+- [ ] **Onboarding flow that highlights friend's data** — after a friend signs up via Pin's invite, first-run screen shows "Here's what Pin has been brewing" with her best 3 recipes. Instant value, even before they log anything.
 - [ ] **Share link templates that explain Pour** — when Pin sends `mypour.app/i/abc`, the OpenGraph preview that renders in iMessage/WhatsApp shows: "Pour — coffee journal · Pin invited you" with a clean image
 - [ ] **Username + display-name set during sign-up** (currently username auto-derived from email; have new users pick a friendly display name on first run)
 

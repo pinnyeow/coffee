@@ -73,7 +73,7 @@ Most coffee apps are either roaster catalogs or one-size-fits-all. Pour is built
 
 ### vs. just sharing recipes in iMessage
 
-When you send Michael "15g, grind 59, 80 RPM, 225ml" he has no idea what to do unless he also has an xBloom. Pour translates **the same recipe** into "Medium grind, 92°C, 1:15 ratio, 3:14 brew time" — universal across pour-over gear.
+When you send a friend "15g, grind 59, 80 RPM, 225ml" they have no idea what to do unless they also have an xBloom. Pour translates **the same recipe** into "Medium grind, 92°C, 1:15 ratio, 3:14 brew time" — universal across pour-over gear.
 
 ---
 
@@ -132,7 +132,7 @@ Yes, for now. The app is in early access — Pin and a small group of friends. N
 
 Roadmap highlights (live at [`ROADMAP.md`](../ROADMAP.md)):
 
-- **Espresso + cortado support** — Michael's drink of choice; coming next
+- **Espresso + cortado support** — her partner's drink of choice; coming next
 - **Personalized invite links** — `mypour.app/i/<token>` so a friend lands on "Pin invited you"
 - **Polish pass** — desktop framing, PWA (add to home screen on iOS), better empty states
 - **Brew timer** — built-in, auto-fills the time field

@@ -37,7 +37,7 @@
   <header class="mb-10">
     <div class="chip text-stone-500">Pour · Architecture</div>
     <h1 class="text-3xl font-semibold text-stone-900 mt-1">How Pour works, front to back</h1>
-    <p class="text-stone-600 mt-2 text-sm max-w-2xl">A visual walkthrough of where your brews live, how they sync between you, Michael, and friends, what the database looks like, and how we keep it secure + tested.</p>
+    <p class="text-stone-600 mt-2 text-sm max-w-2xl">A visual walkthrough of where your brews live, how they sync between you, your partner, and friends, what the database looks like, and how we keep it secure + tested.</p>
   </header>
 
   <!-- 1. BIG PICTURE -->
@@ -48,7 +48,7 @@
         <div class="md:col-span-2">
           <div class="pill pill-front">Frontend</div>
           <div class="mt-2 font-medium text-stone-900">Your phone / laptop browser</div>
-          <div class="text-xs text-stone-600 mt-1">Home, Log brew, Bean detail, Search, Settings. Pin mid-brew on phone; Michael on his phone for espresso.</div>
+          <div class="text-xs text-stone-600 mt-1">Home, Log brew, Bean detail, Search, Settings. Pin mid-brew on phone; her partner on his phone for espresso.</div>
           <div class="text-xs text-stone-500 mt-3">Built with <b>Next.js</b> + <b>Tailwind</b>.</div>
         </div>
         <div class="flex items-center justify-center arrow">→</div>
@@ -111,7 +111,7 @@
 
       <div class="box">
         <div class="pill pill-auth">users</div>
-        <div class="text-xs text-stone-500 mt-2">Pin, Michael, invited friends</div>
+        <div class="text-xs text-stone-500 mt-2">Pin, her partner, invited friends</div>
         <div class="mt-3 text-sm divide-y divide-stone-100">
           <div class="py-1.5 flex justify-between"><span>id</span><span class="text-stone-500">uuid</span></div>
           <div class="py-1.5 flex justify-between"><span>username</span><span class="text-stone-500">text</span></div>
@@ -275,7 +275,7 @@ export async function saveBrew(input: unknown) {
           <div class="text-xs text-stone-600 mt-0.5">Policy: <code>brews.user_id = auth.uid()</code>. Even a malicious client can't write as someone else.</div></div>
         </div>
         <div class="flex gap-3"><span class="step-dot front">5</span>
-          <div class="flex-1 text-xs text-stone-700">Pin's Home refreshes. Michael's "Friends" feed receives a realtime push and updates without reload.</div>
+          <div class="flex-1 text-xs text-stone-700">Pin's Home refreshes. Her partner's "Friends" feed receives a realtime push and updates without reload.</div>
         </div>
       </div>
     </div>
@@ -306,9 +306,9 @@ const friendsBest = supabase.from('brews')
       <div class="space-y-3">
         <div class="flex gap-3"><span class="step-dot front">1</span><div class="text-xs text-stone-700">Home fetches brews where <code>user_id IN myFriendIds AND visibility = 'friends'</code>.</div></div>
         <div class="flex gap-3"><span class="step-dot db">2</span><div class="text-xs text-stone-700">One SQL read, gated by RLS.</div></div>
-        <div class="flex gap-3"><span class="step-dot front">3</span><div class="text-xs text-stone-700">Feed shows Michael's cortado + Sarah's V60 — each with "＋ Copy to my journal".</div></div>
+        <div class="flex gap-3"><span class="step-dot front">3</span><div class="text-xs text-stone-700">Feed shows a friend's cortado + another friend's V60 — each with "＋ Copy to my journal".</div></div>
         <div class="flex gap-3"><span class="step-dot server">4</span>
-          <div class="flex-1"><div class="text-xs text-stone-700">Realtime subscription — when Michael logs another cortado, it arrives via websocket.</div>
+          <div class="flex-1"><div class="text-xs text-stone-700">Realtime subscription — when a friend logs another cortado, it arrives via websocket.</div>
           <pre class="code mt-2">supabase.channel('friend-brews')
   .on('postgres_changes',
     { event: 'INSERT', table: 'brews',
@@ -324,7 +324,7 @@ const friendsBest = supabase.from('brews')
       <div class="space-y-3">
         <div class="flex gap-3"><span class="step-dot front">1</span><div class="text-xs text-stone-700">Pin taps Share. Toggle = Universal. Card shows: dose, water, ratio, temp, grind description, time.</div></div>
         <div class="flex gap-3"><span class="step-dot front">2</span><div class="text-xs text-stone-700">Tap "Copy as text" → clipboard gets formatted universal string.</div></div>
-        <div class="flex gap-3"><span class="step-dot front">3</span><div class="text-xs text-stone-700">Pin pastes into WhatsApp. Sarah sees: "Medium grind" — usable on her V60 without knowing xBloom.</div></div>
+        <div class="flex gap-3"><span class="step-dot front">3</span><div class="text-xs text-stone-700">Pin pastes into WhatsApp. A friend sees: "Medium grind" — usable on their V60 without knowing xBloom.</div></div>
         <div class="flex gap-3"><span class="step-dot server">4</span><div class="text-xs text-stone-700">Phase 2 share link: server renders read-only public page, toggles Universal/xBloom, no login required.</div></div>
       </div>
     </div>
@@ -413,7 +413,7 @@ CREATE POLICY "brews_friends_read" ON brews
       <div class="box">
         <h3 class="font-semibold text-stone-900">C. Dogfood</h3>
         <ul class="mt-2 text-sm text-stone-700 list-disc pl-5 space-y-1">
-          <li>Pin + Michael use Pour for 1 week</li>
+          <li>Pin + her partner use Pour for 1 week</li>
           <li>Log issues in GitHub</li>
           <li>Weekly retro: what broke, what felt slow, what's missing</li>
           <li>Fix highest-impact before Phase 2 deploy</li>
@@ -456,7 +456,7 @@ CREATE POLICY "brews_friends_read" ON brews
         <div class="mt-5 text-xs text-stone-600">
           Open <code>http://localhost:3000</code> on laptop. Magic-link sign-in.<br>
           Phone: <code>http://&lt;laptop-ip&gt;:3000</code>, or after deploy, <code>pour.vercel.app</code>.<br>
-          Data is in Supabase from day one — Pin on laptop and Michael on phone see the same truth.
+          Data is in Supabase from day one — Pin on laptop and her partner on phone see the same truth.
         </div>
       </div>
     </div>

@@ -5,7 +5,7 @@
 Pin had been logging pour-over brews in Obsidian for years — every Ethiopian, every Kenyan, every dial-in attempt at home on her xBloom. The notes worked, but two problems kept nagging:
 
 1. **Finding the best settings was annoying.** Every time she opened a new bag, she'd scroll past 20 attempts looking for "the one that finally worked." Sometimes she'd give up and just guess.
-2. **Sharing recipes with friends was awkward.** Michael (her partner, espresso person) couldn't use her xBloom dial numbers. A friend on a V60 needed translation. Sending "15g, grind 59, 80 RPM" to anyone who didn't have her exact gear was useless.
+2. **Sharing recipes with friends was awkward.** Her partner (an espresso person) couldn't use her xBloom dial numbers. A friend on a V60 needed translation. Sending "15g, grind 59, 80 RPM" to anyone who didn't have her exact gear was useless.
 
 Pour is the app that fixed both of those for her. Now it's open to friends, and slowly the people they invite.
 
@@ -38,7 +38,7 @@ Pour runs on Postgres (via Supabase). No data brokers, no analytics products bei
 ## Who it's for
 
 - People who have brewed the same bean five times trying to dial it in
-- People who own an xBloom, V60, Chemex, AeroPress, or want to support espresso-only friends like Michael
+- People who own an xBloom, V60, Chemex, AeroPress, or want to support espresso-only friends
 - People with 2–10 coffee friends, not 10,000 followers
 - People who've used Obsidian / Notes / a notebook to log brews and wished it did more
 
@@ -60,7 +60,7 @@ Not for: casual drinkers who don't track settings, or people looking for a roast
 
 (Things we want to add. None of these block anyone today; rough order of likelihood.)
 
-- **Espresso & cortado** — for Michael, and people who brew both ways
+- **Espresso & cortado** — for Pin's partner, and people who brew both ways
 - **Personalized invite links** — so a friend lands on "Pin invited you to Pour"
 - **PWA / Add to Home Screen** — feels native on iOS
 - **Built-in brew timer** — auto-fills the time field
@@ -74,7 +74,7 @@ Full list lives in [`ROADMAP.md`](../ROADMAP.md).
 ## Who's behind it
 
 - **Pin** — building it. Coffee on xBloom, primary user.
-- **Michael** — Pin's partner, espresso + cortado, second user, occasional reality-checker.
+- **Pin's partner** — espresso + cortado, second user, occasional reality-checker.
 - **Claude** — Anthropic's AI agent that pair-programmed the codebase. Every commit references this.
 
 This is a hobby-scale project. Don't expect 24/7 support — but do expect an actual human reading every email.
