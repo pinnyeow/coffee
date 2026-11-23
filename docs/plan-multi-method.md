@@ -239,6 +239,20 @@ Five reviews shaped it: a product director, a UX design director (twice), a coff
 - Each method only shows its own profiles. Today's xBloom profiles all show under xBloom, and V60 or Espresso profiles show under their method.
 - **Preview check:** open Log and confirm the starred profile fills in and both profiles are in the picker, same as production.
 
+## Product guide (`/welcome`) stays truthful
+The live guide at mypour.vercel.app/welcome (`src/app/welcome/page.tsx`) already says V60, Chemex and AeroPress are "supported today", with espresso, French press and cold brew "coming". Today those methods exist only as profiles: every brew is saved with xBloom fields. The guide is updated in the same PR as each feature it describes, never ahead of it:
+
+| PR | Guide changes |
+|---|---|
+| PR 1 | None (nothing visible changes) |
+| PR 2 | Page description, hero text and method pills: drop "espresso coming" and list all 7 methods. Step 1 "Log fast": pick your method, the form adapts, and "Log another shot" for dialing in espresso. "Set a profile" step: profiles per method. FAQ "Do I need an xBloom?": every method is supported. Share FAQ: add an espresso example (`Cortado · 18g → 36g (1:2) · 28s · Niche 14`). Keep the universal example in step with what the code actually prints. |
+| PR 3 | Step 2 "Find the best settings": one best recipe per bean **per method**. |
+| PR 4 | Mention Roast and Process under bean details. |
+
+The guide counts toward each PR's preview check: every claim on `/welcome` must be true on that preview.
+
+**Brews already logged with a V60, Chemex or AeroPress profile:** a brew never recorded which profile it used, so migration 010 marks every past brew as xBloom. The first read-only check (`select method, count(*) from profiles group by method`) shows whether this affects you. If it does, PR 2's Edit form lets you switch those brews to their real method (each switch also moves its star to that method).
+
 ## Changes and tradeoffs from the reviews
 
 ### What changed
