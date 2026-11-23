@@ -22,6 +22,7 @@ export type FriendBeanCard = {
     water_temp_c: number | null
     time_seconds: number | null
     rating: number
+    rating_is_default: boolean
     created_at: string
   }
   // For sorting
@@ -248,7 +249,7 @@ export default function HomeFriendsView({
                         {[card.beanOrigin, card.beanRoaster].filter(Boolean).join(' · ')}
                       </div>
                     </div>
-                    {(card.hasExplicitStar || card.hasRatingVariance) && (
+                    {(card.hasExplicitStar || !r.rating_is_default) && (
                       <div className="text-sm text-amber-500 shrink-0 ml-2">
                         {formatStars(r.rating)}
                       </div>

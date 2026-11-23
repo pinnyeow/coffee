@@ -9,6 +9,8 @@ export type BrewForPicker = {
   notes: string | null
   is_best: boolean
   created_at: string
+  /** True for placeholder ratings (e.g. Obsidian import's default 3★) the user never set. */
+  rating_is_default?: boolean
 }
 
 export type RecipeResolution = {
@@ -16,6 +18,8 @@ export type RecipeResolution = {
   label: 'Best' | 'Latest'
   hasRatingVariance: boolean
   hasExplicitStar: boolean
+  /** At least one brew carries a rating the user actually chose. */
+  hasUserRating: boolean
 }
 
 /**
@@ -26,6 +30,7 @@ export type RecipeResolution = {
  */
 export function pickRecipe(brews: BrewForPicker[]): RecipeResolution | null {
   if (brews.length === 0) return null
+  const hasUserRating = brewsHaveUserRating(brews)
 
   const starred = brews.find((b) => b.is_best)
   if (starred) {
@@ -34,6 +39,7 @@ export function pickRecipe(brews: BrewForPicker[]): RecipeResolution | null {
       label: 'Best',
       hasRatingVariance: brewsHaveRatingVariance(brews),
       hasExplicitStar: true,
+      hasUserRating,
     }
   }
 
@@ -48,6 +54,7 @@ export function pickRecipe(brews: BrewForPicker[]): RecipeResolution | null {
       label: 'Best',
       hasRatingVariance: true,
       hasExplicitStar: false,
+      hasUserRating,
     }
   }
 
@@ -60,6 +67,7 @@ export function pickRecipe(brews: BrewForPicker[]): RecipeResolution | null {
     label: 'Latest',
     hasRatingVariance: false,
     hasExplicitStar: false,
+    hasUserRating,
   }
 }
 
@@ -69,9 +77,16 @@ export function brewsHaveRatingVariance(brews: BrewForPicker[]): boolean {
   return brews.some((b) => b.rating !== first)
 }
 
+export function brewsHaveUserRating(brews: BrewForPicker[]): boolean {
+  return brews.some((b) => !b.rating_is_default)
+}
+
+/** Average of the ratings the user chose; falls back to all brews if none were. */
 export function avgRating(brews: BrewForPicker[]): number {
   if (brews.length === 0) return 0
-  return brews.reduce((s, b) => s + b.rating, 0) / brews.length
+  const rated = brews.filter((b) => !b.rating_is_default)
+  const pool = rated.length > 0 ? rated : brews
+  return pool.reduce((s, b) => s + b.rating, 0) / pool.length
 }
 
 export function formatRelative(iso: string): string {

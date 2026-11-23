@@ -48,7 +48,7 @@ export async function updateBrew(
   // Fetch brew to verify ownership + get bean_id for revalidation
   const { data: existing } = await supabase
     .from('brews')
-    .select('id, user_id, bean_id, bean:beans(slug)')
+    .select('id, user_id, bean_id, rating, rating_is_default, bean:beans(slug)')
     .eq('id', id)
     .maybeSingle()
 
@@ -78,6 +78,8 @@ export async function updateBrew(
       water_temp_c: input.water_temp_c ?? null,
       time_seconds: timeSeconds,
       rating: input.rating,
+      // Once the user changes a placeholder rating, it's theirs and should show.
+      rating_is_default: existing.rating_is_default && input.rating === existing.rating,
       notes: input.notes,
       is_best: input.is_best,
       visibility: input.is_private ? 'self' : 'friends',
