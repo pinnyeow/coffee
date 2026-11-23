@@ -3,6 +3,7 @@
 import { redirect } from 'next/navigation'
 import { revalidatePath } from 'next/cache'
 import { UpdateBrewSchema, BrewInputSchema } from '@/lib/validation/brew'
+import { bestScope } from '@/lib/methods'
 import { createClient } from '@/lib/supabase/server'
 import { slugify, parseTimeToSeconds } from '@/lib/slug'
 
@@ -30,7 +31,7 @@ export async function updateBrew(
   // Fetch brew to verify ownership + get bean_id for revalidation
   const { data: existing } = await supabase
     .from('brews')
-    .select('id, user_id, bean_id, rating, rating_is_default, bean:beans(slug)')
+    .select('id, user_id, bean_id, brew_method, rating, rating_is_default, bean:beans(slug)')
     .eq('id', id)
     .maybeSingle()
 
@@ -40,19 +41,27 @@ export async function updateBrew(
 
   const timeSeconds = input.time_str ? parseTimeToSeconds(input.time_str) : null
 
-  // If marking as best, clear other bests for this bean + user first
+  // Clear other bests for this user + bean + method (never across methods)
+  const scope = bestScope({
+    userId: user.id,
+    beanId: existing.bean_id,
+    newMethod: input.brew_method,
+    existingMethod: existing.brew_method,
+  })
   if (input.is_best) {
     await supabase
       .from('brews')
       .update({ is_best: false })
-      .eq('user_id', user.id)
-      .eq('bean_id', existing.bean_id)
+      .eq('user_id', scope.user_id)
+      .eq('bean_id', scope.bean_id)
+      .eq('brew_method', scope.brew_method)
       .neq('id', id)
   }
 
   const { error: updateError } = await supabase
     .from('brews')
     .update({
+      brew_method: scope.brew_method,
       dose_g: input.dose_g,
       water_ml: input.water_ml ?? null,
       grind_xbloom: input.grind_xbloom ?? null,
@@ -179,6 +188,7 @@ export async function saveBrew(
   const { error: brewError } = await supabase.from('brews').insert({
     user_id: user.id,
     bean_id: beanId,
+    brew_method: input.brew_method,
     dose_g: input.dose_g,
     water_ml: input.water_ml ?? null,
     grind_xbloom: input.grind_xbloom ?? null,

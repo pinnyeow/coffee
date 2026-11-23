@@ -1,8 +1,13 @@
 import { z } from 'zod'
+import { BREW_METHODS } from '@/lib/methods'
+
+const methodEnum = z.enum(BREW_METHODS)
 
 // Brew form validation. Kept out of the 'use server' actions file so it can be unit tested.
 
 export const UpdateBrewSchema = z.object({
+  // Optional: an edit from an old form keeps the brew's existing method.
+  brew_method: methodEnum.optional(),
   dose_g: z.coerce.number().positive().max(100),
   water_ml: z.coerce.number().int().positive().max(2000).optional().or(z.literal('').transform(() => undefined)),
   grind_xbloom: z.coerce.number().min(1).max(100).optional().or(z.literal('').transform(() => undefined)),
@@ -22,6 +27,8 @@ export const UpdateBrewSchema = z.object({
 })
 
 export const BrewInputSchema = z.object({
+  // Old forms (open during a deploy) send no method → xBloom.
+  brew_method: methodEnum.default('xBloom'),
   bean_name: z.string().min(1, 'Bean name required').max(120),
   roaster: z.string().max(120).optional().transform((v) => v?.trim() || null),
   origin: z.string().max(120).optional().transform((v) => v?.trim() || null),

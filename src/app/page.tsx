@@ -1,7 +1,7 @@
 import Link from 'next/link'
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
-import { pickRecipe, avgRating, type BrewForPicker } from '@/lib/recipe-picker'
+import { pickPrimaryRecipe, avgRating, type BrewForPicker } from '@/lib/recipe-picker'
 import HomeMineView, {
   type BeanCardData,
   type UnbrewedBookmark,
@@ -58,7 +58,7 @@ export default async function HomePage({
   let brewsQuery = supabase
     .from('brews')
     .select(
-      'id, dose_g, water_ml, grind_xbloom, water_temp_c, time_seconds, rating, rating_is_default, notes, is_best, created_at, bean:beans(id, name, slug, roaster, origin), user:users(id, username, display_name)'
+      'id, brew_method, dose_g, water_ml, grind_xbloom, water_temp_c, time_seconds, rating, rating_is_default, notes, is_best, created_at, bean:beans(id, name, slug, roaster, origin), user:users(id, username, display_name)'
     )
     .order('created_at', { ascending: false })
 
@@ -107,7 +107,7 @@ export default async function HomePage({
     for (const [, group] of grouped) {
       const first = group[0]
       if (!first.bean || !first.user) continue
-      const recipe = pickRecipe(group)!
+      const recipe = pickPrimaryRecipe(group)!
       const latestBrewAt = group.reduce(
         (max, b) =>
           new Date(b.created_at).getTime() > new Date(max).getTime() ? b.created_at : max,
@@ -187,6 +187,7 @@ export default async function HomePage({
         time_seconds: b.time_seconds,
         rating: b.rating,
         rating_is_default: b.rating_is_default,
+        brew_method: b.brew_method,
         notes: b.notes,
         is_best: b.is_best,
         created_at: b.created_at,
@@ -197,7 +198,8 @@ export default async function HomePage({
 
     beanCards = Array.from(byBean.values())
       .map(({ bean, brews }) => {
-        const recipe = pickRecipe(brews)!
+        const recipe = pickPrimaryRecipe(brews)!
+        const methodBrews = recipe.methodBrews
         return {
           beanId: bean.id,
           name: bean.name,
@@ -205,7 +207,7 @@ export default async function HomePage({
           roaster: bean.roaster,
           origin: bean.origin,
           brewCount: brews.length,
-          avgRating: avgRating(brews),
+          avgRating: avgRating(methodBrews),
           hasExplicitStar: recipe.hasExplicitStar,
           hasRatingVariance: recipe.hasRatingVariance,
           hasUserRating: recipe.hasUserRating,
@@ -219,7 +221,7 @@ export default async function HomePage({
             time_seconds: recipe.brew.time_seconds,
             created_at: recipe.brew.created_at,
           },
-          _maxRating: Math.max(...brews.map((b) => b.rating)),
+          _maxRating: Math.max(...methodBrews.map((b) => b.rating)),
           _latestTs: Math.max(
             ...brews.map((b) => new Date(b.created_at).getTime())
           ),

@@ -2,7 +2,7 @@ import Link from 'next/link'
 import { notFound, redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import {
-  pickRecipe,
+  pickPrimaryRecipe,
   avgRating,
   brewsHaveUserRating,
   formatRelative,
@@ -80,7 +80,7 @@ export default async function BeanDetailPage({
   const { data: myBrewsData } = await supabase
     .from('brews')
     .select(
-      'id, dose_g, water_ml, grind_xbloom, water_temp_c, time_seconds, rating, rating_is_default, notes, is_best, visibility, created_at'
+      'id, brew_method, dose_g, water_ml, grind_xbloom, water_temp_c, time_seconds, rating, rating_is_default, notes, is_best, visibility, created_at'
     )
     .eq('bean_id', bean.id)
     .eq('user_id', user.id)
@@ -88,9 +88,10 @@ export default async function BeanDetailPage({
 
   type MyBrewRow = BrewRow & { visibility: string }
   const brews = (myBrewsData ?? []) as MyBrewRow[]
-  const recipe = pickRecipe(brews)
-  const hasUserRating = brewsHaveUserRating(brews)
-  const avg = avgRating(brews)
+  const recipe = pickPrimaryRecipe(brews)
+  const methodBrews = recipe?.methodBrews ?? brews
+  const hasUserRating = brewsHaveUserRating(methodBrews)
+  const avg = avgRating(methodBrews)
 
   // Friend's brews for this bean (RLS gates the rest)
   const [{ data: outF }, { data: inF }] = await Promise.all([
@@ -110,7 +111,7 @@ export default async function BeanDetailPage({
     const { data: fData } = await supabase
       .from('brews')
       .select(
-        'id, dose_g, water_ml, grind_xbloom, water_temp_c, time_seconds, rating, notes, is_best, created_at, user:users(id, username, display_name)'
+        'id, brew_method, dose_g, water_ml, grind_xbloom, water_temp_c, time_seconds, rating, notes, is_best, created_at, user:users(id, username, display_name)'
       )
       .eq('bean_id', bean.id)
       .in('user_id', friendIds)
@@ -130,7 +131,7 @@ export default async function BeanDetailPage({
   for (const fb of friendBrews) {
     if (!fb.user || seen.has(fb.user.id)) continue
     const ofUser = friendBrews.filter((b) => b.user?.id === fb.user!.id)
-    const r = pickRecipe(ofUser)
+    const r = pickPrimaryRecipe(ofUser)
     if (r) {
       friendRecipes.push({ user: fb.user, brew: r.brew as BrewRow, label: r.label })
       seen.add(fb.user.id)

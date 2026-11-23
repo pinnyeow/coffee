@@ -52,6 +52,8 @@ create table if not exists public.beans (
   name text not null,
   roaster text,
   origin text,
+  roast_level text check (roast_level in ('light','medium','dark')),
+  process text check (process in ('washed','natural','honey','anaerobic')),
   created_by uuid references public.users(id) on delete set null,
   created_at timestamptz not null default now()
 );
@@ -80,6 +82,7 @@ create table if not exists public.brews (
   id uuid primary key default gen_random_uuid(),
   user_id uuid not null references public.users(id) on delete cascade,
   bean_id uuid not null references public.beans(id) on delete cascade,
+  brew_method text not null default 'xBloom' check (brew_method in ('xBloom','V60','Chemex','AeroPress','Espresso','French press','Cold brew')),
   dose_g numeric(5,2) not null,
   water_ml integer,
   grind_xbloom numeric(5,2),
@@ -88,6 +91,11 @@ create table if not exists public.brews (
   time_seconds integer,
   rating smallint not null check (rating between 1 and 5),
   rating_is_default boolean not null default false,
+  yield_g numeric(5,2),
+  grind_setting text,
+  drink_style text check (drink_style in ('Espresso','Americano','Cortado','Macchiato','Flat white','Cappuccino','Latte')),
+  milk_kind text check (milk_kind in ('whole','oat','other')),
+  taste_balance text check (taste_balance in ('sour','balanced','bitter')),
   notes text,
   is_best boolean not null default false,
   visibility text not null default 'self' check (visibility in ('self','friends')),
