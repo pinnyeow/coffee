@@ -1,7 +1,8 @@
 import Link from 'next/link'
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
-import LogBrewForm, { type LogBrewDefaults, type ProfileOption } from './log-brew-form'
+import LogBrewForm, { type ProfileOption } from './log-brew-form'
+import { buildLogDefaults } from '@/lib/log-defaults'
 
 export default async function LogBrewPage({
   searchParams,
@@ -26,22 +27,6 @@ export default async function LogBrewPage({
     .order('name')
 
   const allProfiles = (allProfilesData ?? []) as ProfileOption[]
-  const profiles = allProfiles.filter((p) =>
-    ['xBloom', 'V60', 'Chemex', 'AeroPress'].includes(p.method)
-  )
-  const starred = profiles.find((p) => p.is_default)
-  const hasOnlyEspressoProfiles =
-    allProfiles.length > 0 && profiles.length === 0
-
-  const prefillFromUrl = Boolean(pick('bean') || pick('dose') || pick('grind'))
-
-  // Priority: URL params → starred profile → empty
-  const water =
-    pick('water') ??
-    (starred?.dose_g != null && starred?.ratio != null
-      ? String(Math.round(starred.dose_g * starred.ratio))
-      : '')
-
   const fromBrewId = pick('from') ?? ''
 
   // If we have a "from" id, look up the source brew's owner display info for attribution hint
@@ -56,34 +41,13 @@ export default async function LogBrewPage({
     if (u) fromOwnerLabel = u.display_name ?? (u.username ? `@${u.username}` : 'a friend')
   }
 
-  const defaults: LogBrewDefaults = {
-    bean: pick('bean') ?? '',
-    roaster: pick('roaster') ?? '',
-    origin: pick('origin') ?? '',
-    purchased_country: pick('country') ?? '',
-    purchased_city: pick('city') ?? '',
-    purchased_at: pick('shop') ?? '',
-    dose_g: pick('dose') ?? (starred?.dose_g != null ? String(starred.dose_g) : ''),
-    grind_xbloom: pick('grind') ?? (starred?.grind != null ? String(starred.grind) : ''),
-    rpm_xbloom: pick('rpm') ?? (starred?.rpm != null ? String(starred.rpm) : ''),
-    water_ml: water,
-    water_temp_c: pick('temp') ?? (starred?.temp_c != null ? String(starred.temp_c) : ''),
-    time_str: pick('time') ?? '',
-    profile_id: starred?.id ?? '',
-    derived_from_brew_id: fromBrewId,
-  }
-
-  const hint = fromOwnerLabel
-    ? `Trying ${fromOwnerLabel}'s recipe for ${defaults.bean || 'this bean'}. We'll credit them on your brew.`
-    : prefillFromUrl
-    ? `Prefilled from best brew of ${defaults.bean || 'this bean'}. Tweak any field before saving.`
-    : starred
-    ? `Prefilled from your profile: ${starred.name}. Change profile or tweak fields below.`
-    : hasOnlyEspressoProfiles
-    ? "Espresso brew logging is coming soon ☕ For now, you can log pour-over brews here — add a pour-over profile in Settings to auto-fill."
-    : profiles.length === 0
-    ? 'No profile set. Create one in Settings to auto-fill future brews.'
-    : ''
+  const flatParams: Record<string, string | undefined> = {}
+  for (const k of Object.keys(params)) flatParams[k] = pick(k)
+  const { defaults, hint, profiles } = buildLogDefaults({
+    params: flatParams,
+    allProfiles,
+    fromOwnerLabel,
+  })
 
   return (
     <main className="max-w-md mx-auto min-h-screen bg-stone-50 border-x border-stone-200">
