@@ -1,13 +1,13 @@
 # Pour: log espresso and any pour over
 
 ## 1. Problem and goal
-Pour assumes every brew is an xBloom brew, so V60 brews and Michael's cortados can't be logged properly. Pour exists to answer **"I have this bean and this brewer. What should I do?"** This work makes that answer right for every brewer.
+Pour assumes every brew is an xBloom brew, so V60 brews and espresso drinks like cortados can't be logged properly. Pour exists to answer **"I have this bean and this brewer. What should I do?"** This work makes that answer right for every brewer.
 
 **Non-negotiable:** the daily xBloom flow does not change. The only new thing on it is a method row with xBloom already selected.
 
 ## 2. What changes for customers
 
-### A. Pin's daily xBloom log: what changes is marked ◆
+### A. The daily xBloom log: what changes is marked ◆
 ```
 ┌─────────────────────────────────────┐
 │ ← Log a brew                        │
@@ -15,9 +15,9 @@ Pour assumes every brew is an xBloom brew, so V60 brews and Michael's cortados c
 │ ◆┌────────┬───────┬─────────┬──────┐│  new: method row,
 │  │■xBloom │  V60  │Espresso │More ▾││  xBloom preselected
 │  └────────┴───────┴─────────┴──────┘│
-│  PROFILE  Market Lane ★ ▾           │  same picker as today: always shown,
+│  PROFILE  Light roast ★ ▾           │  same picker as today: always shown,
 │  Prefilled from your profile:       │  starred profile fills the form,
-│  Market Lane.                       │  same hint as today
+│  Light roast.                       │  same hint as today
 │                                     │
 │  BEAN                               │
 │  Ethiopia Guji                      │  unchanged
@@ -66,7 +66,7 @@ Pour assumes every brew is an xBloom brew, so V60 brews and Michael's cortados c
  More ▾ → picking Chemex puts it in the 4th slot: [■Chemex ▾]
 ```
 
-### C. Michael's cortado
+### C. An espresso drinker's cortado
 ```
 ┌─────────────────────────────────────┐
 │  ┌────────┬───────┬─────────┬──────┐│
@@ -104,7 +104,7 @@ Pour assumes every brew is an xBloom brew, so V60 brews and Michael's cortados c
 └─────────────────────────────┘
 ```
 - Ordered from least to most milk.
-- Remembers your last choice per user, so Michael's "Cortado" is zero taps.
+- Remembers your last choice per user, so a regular "Cortado" is zero taps.
 - It's a label only: a cortado and a latte from the same shot recipe share one best espresso recipe, because the shot is what you dial in.
 - Shows on the brew row, the bean page and in share text ("Cortado · 18g → 36g").
 - **Milk kind (Pin's choice):** an optional chip row that appears right under Drink, only for milk drinks (Cortado, Macchiato, Flat white, Cappuccino, Latte):
@@ -217,7 +217,7 @@ Pour assumes every brew is an xBloom brew, so V60 brews and Michael's cortados c
 - **Every row fits a 375px-wide phone screen.**
 
 ## 4. What stays exactly the same
-- **Saved profiles** (e.g. Market Lane, Beta coffee): nothing is deleted or rewritten. The only change is a new, empty grind-text column for non-xBloom grinders.
+- **Saved profiles** (e.g. "Light roast", "Geisha"): nothing is deleted or rewritten. The only change is a new, empty grind-text column for non-xBloom grinders.
 - **The xBloom form:**
   - Same fields, same numeric grind dial, same ratio format (1:16.7) and same time entry.
   - The profile picker is always shown, and the starred profile fills the form with the same hint.
@@ -269,7 +269,7 @@ Pressure, pre-infusion, TDS, espresso temperature, in-app timer, milk amount, a 
 - **Previews share production data.** Test brews logged on a preview are real. Delete them after checking.
 
 ## 10. Success
-- Michael logs 10 or more espresso brews in the first 2 weeks.
+- The espresso drinker logs 10 or more espresso brews in the first 2 weeks.
 - Almost no brews get their method changed in Edit; each change means the default was wrong.
-- Pin's weekly xBloom brew count holds steady.
+- The owner's weekly xBloom brew count holds steady.
 - A second dial-in shot takes 4 taps or fewer.

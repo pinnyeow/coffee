@@ -4,7 +4,7 @@
  * These pin how the daily xBloom flow behaves TODAY, before multi-method
  * support lands. They must stay green through every multi-method PR.
  * If one fails, the xBloom experience changed: fix the code, not the test,
- * unless Pin has explicitly agreed to the change.
+ * unless the owner has explicitly agreed to the change.
  */
 import { describe, it, expect } from 'vitest'
 import { formatBrewAsText } from '../share'
@@ -106,9 +106,9 @@ describe('xBloom recipe picking', () => {
 })
 
 // ── Log form prefill from profiles ───────────────────────────────────────
-const marketLane: ProfileOption = {
-  id: 'p-ml',
-  name: 'Market Lane',
+const lightRoast: ProfileOption = {
+  id: 'p-light',
+  name: 'Light roast',
   method: 'xBloom',
   dose_g: 15,
   grind: 55,
@@ -117,9 +117,9 @@ const marketLane: ProfileOption = {
   temp_c: 92,
   is_default: true,
 }
-const betaCoffee: ProfileOption = {
-  id: 'p-beta',
-  name: 'Beta coffee',
+const geisha: ProfileOption = {
+  id: 'p-geisha',
+  name: 'Geisha',
   method: 'xBloom',
   dose_g: 16,
   grind: 58,
@@ -133,7 +133,7 @@ describe('xBloom Log prefill', () => {
   it('starred profile fills dose, grind, rpm, temp and water, with the profile hint', () => {
     const { defaults, hint, profiles } = buildLogDefaults({
       params: {},
-      allProfiles: [marketLane, betaCoffee],
+      allProfiles: [lightRoast, geisha],
       fromOwnerLabel: null,
     })
     expect(defaults).toMatchObject({
@@ -142,18 +142,18 @@ describe('xBloom Log prefill', () => {
       rpm_xbloom: '80',
       water_temp_c: '92',
       water_ml: '251', // round(15 × 16.7)
-      profile_id: 'p-ml',
+      profile_id: 'p-light',
       time_str: '',
       bean: '',
     })
-    expect(hint).toBe('Prefilled from your profile: Market Lane. Change profile or tweak fields below.')
-    expect(profiles.map((p) => p.name)).toEqual(['Market Lane', 'Beta coffee'])
+    expect(hint).toBe('Prefilled from your profile: Light roast. Change profile or tweak fields below.')
+    expect(profiles.map((p) => p.name)).toEqual(['Light roast', 'Geisha'])
   })
 
   it('"Use these settings" URL params override the starred profile', () => {
     const { defaults, hint } = buildLogDefaults({
       params: { bean: 'Ethiopia Guji', dose: '14', grind: '52', water: '230', time: '3:00' },
-      allProfiles: [marketLane, betaCoffee],
+      allProfiles: [lightRoast, geisha],
       fromOwnerLabel: null,
     })
     expect(defaults).toMatchObject({
@@ -163,7 +163,7 @@ describe('xBloom Log prefill', () => {
       water_ml: '230',
       time_str: '3:00',
       rpm_xbloom: '80', // not in URL → from starred profile
-      profile_id: 'p-ml',
+      profile_id: 'p-light',
     })
     expect(hint).toBe('Prefilled from best brew of Ethiopia Guji. Tweak any field before saving.')
   })
@@ -171,10 +171,10 @@ describe('xBloom Log prefill', () => {
   it("friend's recipe hint credits them", () => {
     const { hint } = buildLogDefaults({
       params: { bean: 'Ethiopia Guji', from: '00000000-0000-0000-0000-000000000001' },
-      allProfiles: [marketLane],
-      fromOwnerLabel: 'Michael',
+      allProfiles: [lightRoast],
+      fromOwnerLabel: 'Sam',
     })
-    expect(hint).toBe("Trying Michael's recipe for Ethiopia Guji. We'll credit them on your brew.")
+    expect(hint).toBe("Trying Sam's recipe for Ethiopia Guji. We'll credit them on your brew.")
   })
 
   it('no profiles → nudge to create one', () => {
