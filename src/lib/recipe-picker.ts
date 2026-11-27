@@ -1,3 +1,5 @@
+import { brewsForMethod, primaryMethod, type BrewMethod } from './methods'
+
 export type BrewForPicker = {
   id: string
   dose_g: number
@@ -11,6 +13,8 @@ export type BrewForPicker = {
   created_at: string
   /** True for placeholder ratings (e.g. Obsidian import's default 3★) the user never set. */
   rating_is_default?: boolean
+  /** Missing on rows read before migration 010 → treated as xBloom. */
+  brew_method?: string | null
 }
 
 export type RecipeResolution = {
@@ -69,6 +73,21 @@ export function pickRecipe(brews: BrewForPicker[]): RecipeResolution | null {
     hasExplicitStar: false,
     hasUserRating,
   }
+}
+
+/**
+ * Picks the recipe for a bean using only brews of its most recently used
+ * method, so one method's best never shows as another's. For all-xBloom
+ * beans this is identical to pickRecipe(brews).
+ */
+export function pickPrimaryRecipe<T extends BrewForPicker>(
+  brews: T[]
+): (RecipeResolution & { method: BrewMethod; methodBrews: T[] }) | null {
+  const method = primaryMethod(brews)
+  if (!method) return null
+  const methodBrews = brewsForMethod(brews, method)
+  const r = pickRecipe(methodBrews)!
+  return { ...r, method, methodBrews }
 }
 
 export function brewsHaveRatingVariance(brews: BrewForPicker[]): boolean {

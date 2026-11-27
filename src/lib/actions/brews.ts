@@ -2,28 +2,11 @@
 
 import { redirect } from 'next/navigation'
 import { revalidatePath } from 'next/cache'
-import { z } from 'zod'
+import { UpdateBrewSchema, BrewInputSchema } from '@/lib/validation/brew'
+import { bestScope } from '@/lib/methods'
 import { createClient } from '@/lib/supabase/server'
 import { slugify, parseTimeToSeconds } from '@/lib/slug'
 
-const UpdateBrewSchema = z.object({
-  dose_g: z.coerce.number().positive().max(100),
-  water_ml: z.coerce.number().int().positive().max(2000).optional().or(z.literal('').transform(() => undefined)),
-  grind_xbloom: z.coerce.number().min(1).max(100).optional().or(z.literal('').transform(() => undefined)),
-  rpm_xbloom: z.coerce.number().int().min(1).max(200).optional().or(z.literal('').transform(() => undefined)),
-  water_temp_c: z.coerce.number().min(60).max(100).optional().or(z.literal('').transform(() => undefined)),
-  time_str: z.string().optional().transform((v) => v?.trim() || ''),
-  rating: z.coerce.number().int().min(1).max(5),
-  notes: z.string().max(2000).optional().transform((v) => v?.trim() || null),
-  is_best: z
-    .union([z.literal('on'), z.literal('true'), z.literal('false'), z.literal('')])
-    .optional()
-    .transform((v) => v === 'on' || v === 'true'),
-  is_private: z
-    .union([z.literal('on'), z.literal('true'), z.literal('false'), z.literal('')])
-    .optional()
-    .transform((v) => v === 'on' || v === 'true'),
-})
 
 export async function updateBrew(
   id: string,
@@ -48,7 +31,7 @@ export async function updateBrew(
   // Fetch brew to verify ownership + get bean_id for revalidation
   const { data: existing } = await supabase
     .from('brews')
-    .select('id, user_id, bean_id, rating, rating_is_default, bean:beans(slug)')
+    .select('id, user_id, bean_id, brew_method, rating, rating_is_default, bean:beans(slug)')
     .eq('id', id)
     .maybeSingle()
 
@@ -58,19 +41,27 @@ export async function updateBrew(
 
   const timeSeconds = input.time_str ? parseTimeToSeconds(input.time_str) : null
 
-  // If marking as best, clear other bests for this bean + user first
+  // Clear other bests for this user + bean + method (never across methods)
+  const scope = bestScope({
+    userId: user.id,
+    beanId: existing.bean_id,
+    newMethod: input.brew_method,
+    existingMethod: existing.brew_method,
+  })
   if (input.is_best) {
     await supabase
       .from('brews')
       .update({ is_best: false })
-      .eq('user_id', user.id)
-      .eq('bean_id', existing.bean_id)
+      .eq('user_id', scope.user_id)
+      .eq('bean_id', scope.bean_id)
+      .eq('brew_method', scope.brew_method)
       .neq('id', id)
   }
 
   const { error: updateError } = await supabase
     .from('brews')
     .update({
+      brew_method: scope.brew_method,
       dose_g: input.dose_g,
       water_ml: input.water_ml ?? null,
       grind_xbloom: input.grind_xbloom ?? null,
@@ -121,31 +112,6 @@ export async function deleteBrew(id: string): Promise<{ error?: string; redirect
   return { redirectTo: beanSlug ? `/beans/${beanSlug}` : '/' }
 }
 
-const BrewInputSchema = z.object({
-  bean_name: z.string().min(1, 'Bean name required').max(120),
-  roaster: z.string().max(120).optional().transform((v) => v?.trim() || null),
-  origin: z.string().max(120).optional().transform((v) => v?.trim() || null),
-  purchased_country: z.string().max(80).optional().transform((v) => v?.trim() || null),
-  purchased_city: z.string().max(80).optional().transform((v) => v?.trim() || null),
-  purchased_at: z.string().max(120).optional().transform((v) => v?.trim() || null),
-  dose_g: z.coerce.number().positive().max(100),
-  water_ml: z.coerce.number().int().positive().max(2000).optional().or(z.literal('').transform(() => undefined)),
-  grind_xbloom: z.coerce.number().min(1).max(100).optional().or(z.literal('').transform(() => undefined)),
-  rpm_xbloom: z.coerce.number().int().min(1).max(200).optional().or(z.literal('').transform(() => undefined)),
-  water_temp_c: z.coerce.number().min(60).max(100).optional().or(z.literal('').transform(() => undefined)),
-  time_str: z.string().optional().transform((v) => v?.trim() || ''),
-  rating: z.coerce.number().int().min(1).max(5),
-  notes: z.string().max(2000).optional().transform((v) => v?.trim() || null),
-  derived_from_brew_id: z
-    .string()
-    .uuid()
-    .optional()
-    .or(z.literal('').transform(() => undefined)),
-  is_private: z
-    .union([z.literal('on'), z.literal('true'), z.literal('false'), z.literal('')])
-    .optional()
-    .transform((v) => v === 'on' || v === 'true'),
-})
 
 export type BrewFormState = {
   error?: string
@@ -222,6 +188,7 @@ export async function saveBrew(
   const { error: brewError } = await supabase.from('brews').insert({
     user_id: user.id,
     bean_id: beanId,
+    brew_method: input.brew_method,
     dose_g: input.dose_g,
     water_ml: input.water_ml ?? null,
     grind_xbloom: input.grind_xbloom ?? null,
